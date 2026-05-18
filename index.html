@@ -298,10 +298,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 
 /* ── AUTH LAYER ── */
 .auth-overlay{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;}
-.auth-box{background:var(--warm-white);border-radius:var(--radius);padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:var(--shadow-md);}
+.auth-box{background:var(--warm-white);border-radius:var(--radius);width:100%;max-width:380px;box-shadow:var(--shadow-md);padding:2.5rem 2rem;}
 .auth-logo{font-family:'DM Sans',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:.18em;color:var(--purple);text-align:center;margin-bottom:.15rem;}
 .auth-logo span{color:var(--accent);}
 .auth-tagline{text-align:center;font-size:.82rem;color:var(--ink-light);margin-bottom:2rem;}
+/* desktop two-column full-screen layout */
+@media(min-width:768px){
+  .auth-overlay{padding:0;background:none;}
+  .auth-box{display:flex;max-width:100%;width:100%;height:100vh;border-radius:0;box-shadow:none;padding:0;overflow:hidden;}
+  .auth-left{flex:1;background:var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 3rem;gap:1.75rem;}
+  .auth-left-tagline{color:rgba(255,255,255,.7);font-size:1rem;text-align:center;line-height:1.7;letter-spacing:.02em;}
+  .auth-left-product{font-family:'DM Serif Display',serif;font-style:italic;color:#fff;font-size:2rem;}
+  .auth-right{flex:0 0 440px;padding:0 3.5rem;display:flex;flex-direction:column;justify-content:center;background:var(--warm-white);}
+  .auth-right .auth-tagline{display:none;}
+  .auth-right>div[style*="text-align:center"]{display:none;}
+  .auth-right .auth-label{margin-top:1.25rem;}
+  .auth-right .auth-input{padding:.75rem 1rem;font-size:.95rem;}
+  .auth-right .auth-btn{padding:.85rem;font-size:1rem;margin-top:2rem;}
+}
+@media(max-width:767px){
+  .auth-left{display:none;}
+  .auth-right{width:100%;}
+}
 .auth-label{display:block;font-size:.78rem;font-weight:500;color:var(--ink-mid);margin-bottom:.35rem;margin-top:1rem;}
 .auth-input{width:100%;padding:.6rem .8rem;border:1px solid var(--border-mid);border-radius:var(--radius-sm);font-size:.9rem;background:var(--cream);color:var(--ink);outline:none;transition:border .15s;}
 .auth-input:focus{border-color:var(--purple);}
@@ -1336,22 +1354,31 @@ z"/></symbol></svg>
 <!-- ══ LOGIN OVERLAY ══ -->
 <div id="auth-overlay" class="auth-overlay">
   <div class="auth-box">
-    <div style="text-align:center;margin-bottom:.25rem;">
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1313 800" style="height:130px;width:auto;display:block;margin:0 auto;" aria-label="Wonder"><use href="#wonder-logo" width="1313" height="800"/></svg>
+    <!-- desktop left panel -->
+    <div class="auth-left">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1313 800" style="height:140px;width:auto;display:block;filter:brightness(0) invert(1);" aria-label="Wonder"><use href="#wonder-logo" width="1313" height="800"/></svg>
+      <div class="auth-left-product">Amplify</div>
+      <div class="auth-left-tagline">A1 English<br>Teacher &amp; Student Platform</div>
     </div>
-    <div style="text-align:center;font-family:'DM Serif Display',serif;font-style:italic;color:var(--purple);font-size:1.1rem;margin-bottom:.25rem;margin-top:.35rem;">Amplify</div>
-    <div class="auth-tagline">A1 English · Teacher &amp; Student Platform</div>
-    <label class="auth-label">Email</label>
-    <input type="email" id="login-email" class="auth-input" placeholder="your@email.com" onkeypress="if(event.key==='Enter')doLogin()">
-    <label class="auth-label">Password</label>
-    <input type="password" id="login-password" class="auth-input" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()">
-    <button type="button" class="auth-btn" onclick="doLogin()">Sign In</button>
-    <div class="auth-error" id="login-error">Incorrect email or password.</div>
-    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--ink-light);text-align:center;">
-      Demo accounts:<br>
-      <strong>admin@speakup.com</strong> · admin123<br>
-      <strong>teacher@speakup.com</strong> · teach123<br>
-      <strong>ana@speakup.com</strong> · student123
+    <!-- form panel (mobile: full card, desktop: right side) -->
+    <div class="auth-right">
+      <div style="text-align:center;margin-bottom:.25rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1313 800" style="height:110px;width:auto;display:block;margin:0 auto;" aria-label="Wonder"><use href="#wonder-logo" width="1313" height="800"/></svg>
+      </div>
+      <div style="text-align:center;font-family:'DM Serif Display',serif;font-style:italic;color:var(--purple);font-size:1.1rem;margin-bottom:.25rem;margin-top:.35rem;">Amplify</div>
+      <div class="auth-tagline">A1 English · Teacher &amp; Student Platform</div>
+      <label class="auth-label">Email</label>
+      <input type="email" id="login-email" class="auth-input" placeholder="your@email.com" onkeypress="if(event.key==='Enter')doLogin()">
+      <label class="auth-label">Password</label>
+      <input type="password" id="login-password" class="auth-input" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()">
+      <button type="button" class="auth-btn" onclick="doLogin()">Sign In</button>
+      <div class="auth-error" id="login-error">Incorrect email or password.</div>
+      <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--ink-light);text-align:center;">
+        Demo accounts:<br>
+        <strong>admin@speakup.com</strong> · admin123<br>
+        <strong>teacher@speakup.com</strong> · teach123<br>
+        <strong>ana@speakup.com</strong> · student123
+      </div>
     </div>
   </div>
 </div>
