@@ -2679,45 +2679,99 @@ function renderVocabulary(data) {
 
 function renderAudio(cn, data) {
   const scripts = data?.teacher?.audio_scripts || [];
+  const dialogueLines = data?.teacher?.dialogue?.lines || [];
+  const vocab = data?.teacher?.vocab || [];
+  const dialogueText = dialogueLines.map(l => (l.role||l.sp) + ': ' + l.en).join('. ');
+  const vocabText = vocab.map(v => v.en).join('. ');
+  const trackCard = (text, rate, title, sub) =>
+    `<div class="ov-card" onclick="playAudio(this)" data-text="${text.replace(/"/g,'&quot;')}" data-rate="${rate}" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
+      <span class="audio-icon" style="font-size:1.5rem;">▶️</span>
+      <div><div style="font-weight:500;font-size:.88rem;">${title}</div><div style="font-size:.75rem;color:var(--ink-light);">${sub}</div></div>
+    </div>`;
   return `<div>
     <div style="margin-bottom:1.25rem;">
       <div style="font-size:.78rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);margin-bottom:.75rem;">Audio Tracks</div>
       <div style="display:flex;flex-direction:column;gap:.75rem;">
-        <div class="ov-card" onclick="simulateAudio(this)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
-          <span style="font-size:1.5rem;">▶️</span>
-          <div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Full dialogue at natural speed</div></div>
-        </div>
-        <div class="ov-card" onclick="simulateAudio(this)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
-          <span style="font-size:1.5rem;">▶️</span>
-          <div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Each line at 70% speed for clarity</div></div>
-        </div>
-        <div class="ov-card" onclick="simulateAudio(this)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
-          <span style="font-size:1.5rem;">▶️</span>
-          <div><div style="font-weight:500;font-size:.88rem;">Vocabulary pronunciation</div><div style="font-size:.75rem;color:var(--ink-light);">Each word pronounced clearly</div></div>
-        </div>
+        ${trackCard(dialogueText, 1, 'Dialogue — Class '+cn, 'Full dialogue at natural speed')}
+        ${trackCard(dialogueText, 0.7, 'Slow version', 'Each line at 70% speed for clarity')}
+        ${trackCard(vocabText, 0.85, 'Vocabulary pronunciation', 'Each word pronounced clearly')}
       </div>
     </div>
     ${scripts.length?`<div>
       <div style="font-size:.78rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);margin-bottom:.75rem;">Audio Scripts</div>
       ${scripts.map(s=>`<div class="ov-card" style="margin-bottom:.75rem;">
-        <div class="ov-card-title">${s.title}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
+          <div class="ov-card-title" style="margin:0;">${s.title}</div>
+          <div class="ov-card" onclick="playAudio(this)" data-text="${s.script.replace(/"/g,'&quot;')}" data-rate="1" style="cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem;margin:0;font-size:.75rem;">
+            <span class="audio-icon">▶️</span> Play
+          </div>
+        </div>
         <p style="font-size:.82rem;line-height:1.6;">${s.script}</p>
       </div>`).join('')}
     </div>`:''}
   </div>`;
 }
 
-function simulateAudio(el) {
-  const orig = el.querySelector('span')?.textContent;
+/* ── WEB SPEECH API AUDIO ENGINE ── */
+var _ttsEl = null;
+
+function _ttsSpeak(el, text, rate) {
+  if (!window.speechSynthesis) { alert('Text-to-speech is not supported in this browser.'); return; }
+  var iconEl = el.querySelector('.audio-icon') || el;
+  // toggle off if already playing this element
   if (el.dataset.playing) {
-    el.querySelector('span').textContent = orig||'▶️';
+    window.speechSynthesis.cancel();
+    iconEl.textContent = '▶️';
     delete el.dataset.playing;
+    _ttsEl = null;
     return;
   }
-  el.dataset.playing = '1';
-  el.querySelector('span').textContent = '⏸️';
-  setTimeout(() => { el.querySelector('span').textContent = orig||'▶️'; delete el.dataset.playing; }, 3000);
+  // stop any other playing element
+  if (_ttsEl) {
+    window.speechSynthesis.cancel();
+    var prev = _ttsEl.querySelector('.audio-icon') || _ttsEl;
+    prev.textContent = '▶️';
+    delete _ttsEl.dataset.playing;
+    _ttsEl = null;
+  }
+  if (!text) return;
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = parseFloat(rate) || 1;
+  utter.pitch = 1;
+  function doSpeak() {
+    var voices = window.speechSynthesis.getVoices();
+    var v = voices.find(v => v.lang === 'en-US' && v.localService) ||
+            voices.find(v => v.lang.startsWith('en') && v.localService) ||
+            voices.find(v => v.lang.startsWith('en'));
+    if (v) utter.voice = v;
+    el.dataset.playing = '1';
+    iconEl.textContent = '⏸️';
+    _ttsEl = el;
+    utter.onend = utter.onerror = function() {
+      if (_ttsEl === el) { iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; }
+    };
+    window.speechSynthesis.speak(utter);
+  }
+  if (window.speechSynthesis.getVoices().length) { doSpeak(); }
+  else { window.speechSynthesis.onvoiceschanged = function() { doSpeak(); window.speechSynthesis.onvoiceschanged = null; }; }
 }
+
+function playAudio(el) {
+  _ttsSpeak(el, el.dataset.text || '', parseFloat(el.dataset.rate) || 1);
+}
+
+function speakWord(word, rate) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var utter = new SpeechSynthesisUtterance(word);
+  utter.lang = 'en-US';
+  utter.rate = parseFloat(rate) || 0.85;
+  window.speechSynthesis.speak(utter);
+}
+
+// legacy stub — no longer used but kept for safety
+function simulateAudio(el) { playAudio(el); }
 
 function renderDialogue(data) {
   const d = data?.teacher?.dialogue;
@@ -2998,13 +3052,14 @@ function renderStudentStage(cn, stage, data) {
     </div>`;
   }
   if (stage === 'listen') {
+    const dlText = (data?.teacher?.dialogue?.lines||[]).map(l=>(l.role||l.sp)+': '+l.en).join('. ');
     return `<div>
       <p style="font-size:.85rem;color:var(--ink-mid);margin-bottom:1rem;">${sd?.warmup||'Listen to the audio and follow along.'}</p>
-      <div class="ov-card" onclick="simulateAudio(this)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
-        <span style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Natural speed</div></div>
+      <div class="ov-card" onclick="playAudio(this)" data-text="${dlText.replace(/"/g,'&quot;')}" data-rate="1" style="cursor:pointer;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
+        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Natural speed</div></div>
       </div>
-      <div class="ov-card" onclick="simulateAudio(this)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
-        <span style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Clear pronunciation</div></div>
+      <div class="ov-card" onclick="playAudio(this)" data-text="${dlText.replace(/"/g,'&quot;')}" data-rate="0.7" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
+        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Clear pronunciation</div></div>
       </div>
     </div>`;
   }
@@ -3044,7 +3099,7 @@ function renderStudentStage(cn, stage, data) {
       <p style="font-size:.84rem;color:var(--ink-mid);margin-bottom:1rem;">Listen and repeat each word. Pay attention to stress and sounds.</p>
       ${vocab.slice(0,6).map(v => `<div class="ov-card" style="margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between;">
         <span style="font-weight:500;font-size:.88rem;">${v.en}</span>
-        <button onclick="simulateAudio(this.parentElement)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;">🔊</button>
+        <button onclick="speakWord('${v.en.replace(/'/g,"\\'")}')" style="background:none;border:none;cursor:pointer;font-size:1.2rem;" title="Pronounce">🔊</button>
       </div>`).join('')}
     </div>`;
   }
