@@ -3066,7 +3066,7 @@ function renderStudentClass() {
       <span style="font-size:.82rem;color:var(--ink-light);">Class ${cn}: ${meta?.name}</span>
     </div>
     <div class="student-stages-bar">
-      ${stages.map(s => `<button class="student-stage-btn ${s===currentStudentStage?'active':''}" onclick="switchStudentStage('${s}')">
+      ${stages.map(s => `<button class="student-stage-btn ${s===currentStudentStage?'active':''}" onclick="switchStudentStage(event,'${s}')">
         <span class="s-icon">${stageLabels[s].split('\n')[0]}</span>${stageLabels[s].split('\n')[1]}
       </button>`).join('')}
     </div>
@@ -3081,12 +3081,13 @@ function renderStudentClass() {
   document.getElementById('student-view-content').innerHTML = html;
 }
 
-function switchStudentStage(s) {
+function switchStudentStage(e, s) {
   currentStudentStage = s;
   const cn = currentStudentClass;
   const data = getClassData(cn);
   document.querySelectorAll('.student-stage-btn').forEach(b => b.classList.remove('active'));
-  event.target.closest('.student-stage-btn').classList.add('active');
+  var btn = e.target.closest('.student-stage-btn');
+  if (btn) btn.classList.add('active');
   document.getElementById('student-stage-area').innerHTML = renderStudentStage(cn, s, data);
 }
 
