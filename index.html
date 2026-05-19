@@ -2692,8 +2692,14 @@ function renderAudio(cn, data) {
     <div style="margin-bottom:1.25rem;">
       <div style="font-size:.78rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);margin-bottom:.75rem;">Audio Tracks</div>
       <div style="display:flex;flex-direction:column;gap:.75rem;">
-        ${trackCard(dialogueText, 1, 'Dialogue — Class '+cn, 'Full dialogue at natural speed')}
-        ${trackCard(dialogueText, 0.7, 'Slow version', 'Each line at 70% speed for clarity')}
+        <div class="ov-card" onclick="playDialogue(this,${cn},1)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
+          <span class="audio-icon" style="font-size:1.5rem;">▶️</span>
+          <div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Full dialogue at natural speed · two voices</div></div>
+        </div>
+        <div class="ov-card" onclick="playDialogue(this,${cn},0.7)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
+          <span class="audio-icon" style="font-size:1.5rem;">▶️</span>
+          <div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Each line at 70% speed for clarity</div></div>
+        </div>
         ${trackCard(vocabText, 0.85, 'Vocabulary pronunciation', 'Each word pronounced clearly')}
       </div>
     </div>
@@ -2715,35 +2721,41 @@ function renderAudio(cn, data) {
 /* ── WEB SPEECH API AUDIO ENGINE ── */
 var _ttsEl = null;
 
-function _ttsSpeak(el, text, rate) {
-  if (!window.speechSynthesis) { alert('Text-to-speech is not supported in this browser.'); return; }
-  var iconEl = el.querySelector('.audio-icon') || el;
-  // toggle off if already playing this element
-  if (el.dataset.playing) {
-    window.speechSynthesis.cancel();
-    iconEl.textContent = '▶️';
-    delete el.dataset.playing;
-    _ttsEl = null;
-    return;
-  }
-  // stop any other playing element
+// Pick the best English voices: one female, one male
+function _getEnVoices() {
+  var all = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  var female = all.find(v => /samantha|zira|karen|moira|fiona|victoria|susan|kate|serena|allison|ava|linda|emma|lisa/i.test(v.name))
+            || all.find(v => /female/i.test(v.name))
+            || all[0];
+  var male   = all.find(v => /david|mark|daniel|alex|fred|thomas|james|george|lee|rishi/i.test(v.name))
+            || all.find(v => /male/i.test(v.name) && v !== female)
+            || all[1] || all[0];
+  return { female, male };
+}
+
+function _stopCurrent() {
   if (_ttsEl) {
     window.speechSynthesis.cancel();
-    var prev = _ttsEl.querySelector('.audio-icon') || _ttsEl;
-    prev.textContent = '▶️';
+    var icon = _ttsEl.querySelector('.audio-icon') || _ttsEl;
+    icon.textContent = '▶️';
     delete _ttsEl.dataset.playing;
     _ttsEl = null;
   }
+}
+
+// Play a single text block (scripts, vocab) with the female voice
+function _ttsSpeak(el, text, rate) {
+  if (!window.speechSynthesis) { alert('Text-to-speech is not supported in this browser.'); return; }
+  var iconEl = el.querySelector('.audio-icon') || el;
+  if (el.dataset.playing) { _stopCurrent(); return; }
+  _stopCurrent();
   if (!text) return;
-  var utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'en-US';
-  utter.rate = parseFloat(rate) || 1;
-  utter.pitch = 1;
   function doSpeak() {
-    var voices = window.speechSynthesis.getVoices();
-    var v = voices.find(v => v.lang === 'en-US' && v.localService) ||
-            voices.find(v => v.lang.startsWith('en') && v.localService) ||
-            voices.find(v => v.lang.startsWith('en'));
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = parseFloat(rate) || 1;
+    utter.pitch = 1;
+    var v = _getEnVoices().female;
     if (v) utter.voice = v;
     el.dataset.playing = '1';
     iconEl.textContent = '⏸️';
@@ -2752,6 +2764,46 @@ function _ttsSpeak(el, text, rate) {
       if (_ttsEl === el) { iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; }
     };
     window.speechSynthesis.speak(utter);
+  }
+  if (window.speechSynthesis.getVoices().length) { doSpeak(); }
+  else { window.speechSynthesis.onvoiceschanged = function() { doSpeak(); window.speechSynthesis.onvoiceschanged = null; }; }
+}
+
+// Play dialogue line by line, alternating voices per speaker
+function playDialogue(el, cn, rate) {
+  if (!window.speechSynthesis) { alert('Text-to-speech is not supported in this browser.'); return; }
+  var iconEl = el.querySelector('.audio-icon') || el;
+  if (el.dataset.playing) { _stopCurrent(); return; }
+  _stopCurrent();
+  var classData = (typeof CLASSES !== 'undefined' ? CLASSES : {})[cn];
+  var lines = classData?.teacher?.dialogue?.lines || [];
+  if (!lines.length) return;
+  // Assign a voice to each unique speaker label
+  var speakers = [];
+  lines.forEach(function(l) { if (speakers.indexOf(l.sp) === -1) speakers.push(l.sp); });
+  function doSpeak() {
+    var voices = _getEnVoices();
+    var voiceMap = {};
+    speakers.forEach(function(sp, i) { voiceMap[sp] = i % 2 === 0 ? voices.male : voices.female; });
+    el.dataset.playing = '1';
+    iconEl.textContent = '⏸️';
+    _ttsEl = el;
+    var idx = 0;
+    function next() {
+      if (idx >= lines.length || !el.dataset.playing) {
+        iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; return;
+      }
+      var line = lines[idx++];
+      var utter = new SpeechSynthesisUtterance(line.en); // only the spoken line, no role prefix
+      utter.lang = 'en-US';
+      utter.rate = parseFloat(rate) || 1;
+      utter.pitch = 1;
+      if (voiceMap[line.sp]) utter.voice = voiceMap[line.sp];
+      utter.onend = next;
+      utter.onerror = function() { iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; };
+      window.speechSynthesis.speak(utter);
+    }
+    next();
   }
   if (window.speechSynthesis.getVoices().length) { doSpeak(); }
   else { window.speechSynthesis.onvoiceschanged = function() { doSpeak(); window.speechSynthesis.onvoiceschanged = null; }; }
@@ -2767,10 +2819,12 @@ function speakWord(word, rate) {
   var utter = new SpeechSynthesisUtterance(word);
   utter.lang = 'en-US';
   utter.rate = parseFloat(rate) || 0.85;
+  var v = _getEnVoices().female;
+  if (v) utter.voice = v;
   window.speechSynthesis.speak(utter);
 }
 
-// legacy stub — no longer used but kept for safety
+// legacy stub
 function simulateAudio(el) { playAudio(el); }
 
 function renderDialogue(data) {
@@ -3055,10 +3109,10 @@ function renderStudentStage(cn, stage, data) {
     const dlText = (data?.teacher?.dialogue?.lines||[]).map(l=>(l.role||l.sp)+': '+l.en).join('. ');
     return `<div>
       <p style="font-size:.85rem;color:var(--ink-mid);margin-bottom:1rem;">${sd?.warmup||'Listen to the audio and follow along.'}</p>
-      <div class="ov-card" onclick="playAudio(this)" data-text="${dlText.replace(/"/g,'&quot;')}" data-rate="1" style="cursor:pointer;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
-        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Natural speed</div></div>
+      <div class="ov-card" onclick="playDialogue(this,${cn},1)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
+        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Natural speed · two voices</div></div>
       </div>
-      <div class="ov-card" onclick="playAudio(this)" data-text="${dlText.replace(/"/g,'&quot;')}" data-rate="0.7" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
+      <div class="ov-card" onclick="playDialogue(this,${cn},0.7)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
         <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Clear pronunciation</div></div>
       </div>
     </div>`;
