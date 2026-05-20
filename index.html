@@ -1656,6 +1656,7 @@ z"/></symbol></svg>
         <div>
           <h2>Welcome back, <span id="student-name-display">Ana!</span> 👋</h2>
           <p style="opacity:.85;font-size:.82rem;margin-top:.2rem;">Keep going — every class brings you closer to real English fluency.</p>
+          <p id="student-id-display" style="opacity:.65;font-size:.72rem;margin-top:.25rem;font-family:monospace;letter-spacing:.04em;"></p>
         </div>
         <button type="button" onclick="showTicketModal()" style="padding:.35rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:none;color:#fff;cursor:pointer;font-size:.75rem;white-space:nowrap;">🎫 Support</button>
       </div>
@@ -1675,8 +1676,8 @@ var DEFAULT_USERS = [
   {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
   {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
   {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',  active:true, assignedTeacher:null,  products:['amplify'], assignedClasses:null},
-  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null},
-  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null},
+  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null, studentId:'WND-000001', emailHistory:['ana@speakup.com']},
+  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null, studentId:'WND-000002', emailHistory:['carlos@speakup.com']},
 ];
 
 function getUsers() {
@@ -1692,6 +1693,90 @@ function getSettings() {
 }
 function saveSettings(s) {
   localStorage.setItem('su_settings', JSON.stringify(s));
+}
+
+// ══════════════════════════════════════════════════════════════
+// STUDENT IDENTITY SYSTEM
+// Architecture note: su_id_registry is append-only and never wiped,
+// even when users are deleted. This preserves academic history.
+// To migrate to backend: replace getIdRegistry/saveIdRegistry with API calls.
+// ══════════════════════════════════════════════════════════════
+var _ID_REGISTRY_KEY = 'su_id_registry';
+
+// Seed registry with the two default demo students so history is coherent.
+var _DEFAULT_ID_REGISTRY = {
+  counter: 2,
+  emailHistory: {
+    'ana@speakup.com':    'WND-000001',
+    'carlos@speakup.com': 'WND-000002'
+  }
+};
+
+function getIdRegistry() {
+  try {
+    var s = localStorage.getItem(_ID_REGISTRY_KEY);
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(_DEFAULT_ID_REGISTRY));
+  } catch(e) { return JSON.parse(JSON.stringify(_DEFAULT_ID_REGISTRY)); }
+}
+function saveIdRegistry(reg) {
+  try { localStorage.setItem(_ID_REGISTRY_KEY, JSON.stringify(reg)); } catch(e) {}
+}
+
+// Generate a permanent, never-reused student ID.
+// Format: WND-YYMMDD-XXXX  e.g. WND-260519-0003
+function generateStudentId() {
+  var reg = getIdRegistry();
+  reg.counter = (reg.counter || 0) + 1;
+  var d   = new Date();
+  var yy  = String(d.getFullYear()).slice(-2);
+  var mm  = String(d.getMonth() + 1).padStart(2, '0');
+  var dd  = String(d.getDate()).padStart(2, '0');
+  var seq = String(reg.counter).padStart(4, '0');
+  var sid = 'WND-' + yy + mm + dd + '-' + seq;
+  saveIdRegistry(reg);
+  return sid;
+}
+
+// Record an email → studentId mapping in the append-only history.
+function recordEmailHistory(email, studentId) {
+  var reg = getIdRegistry();
+  reg.emailHistory = reg.emailHistory || {};
+  if (!reg.emailHistory[email.toLowerCase()]) {
+    reg.emailHistory[email.toLowerCase()] = studentId;
+    saveIdRegistry(reg);
+  }
+}
+
+// Validate an email before creating/updating a user.
+// Returns { ok: true } or { ok: false, error: '...' } or { ok: true, warning: '...' }
+function validateEmailForUser(email, excludeUserId) {
+  email = email.toLowerCase().trim();
+  // Basic format check
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: 'Please enter a valid email address.' };
+  }
+  // Hard block: active user with same email (excluding self on edit)
+  var users = getUsers();
+  var conflict = users.find(function(u) {
+    return u.email.toLowerCase() === email && u.active && u.id !== excludeUserId;
+  });
+  if (conflict) {
+    return { ok: false, error: 'This email is already in use by an active account (' + conflict.name + ').' };
+  }
+  // Soft flag: email has a historical association with a different student ID
+  var reg = getIdRegistry();
+  var historicalId = reg.emailHistory && reg.emailHistory[email];
+  if (historicalId) {
+    // Check if the historical owner still exists (even if inactive/deleted)
+    var owner = users.find(function(u) { return u.studentId === historicalId; });
+    var ownerName = owner ? owner.name : 'a deleted account';
+    return {
+      ok: true,
+      warning: 'This email was previously linked to student ID ' + historicalId +
+               ' (' + ownerName + '). Proceeding will create a new, separate account.'
+    };
+  }
+  return { ok: true };
 }
 
 // Current logged-in user
@@ -1993,7 +2078,9 @@ function renderUsersTable() {
   var roleColors = {admin:'role-admin', operator:'role-operator', teacher:'role-teacher', student:'role-student'};
   tbody.innerHTML = users.map(function(u, i){
     return '<tr>' +
-      '<td><strong>' + u.name + '</strong></td>' +
+      '<td><strong>' + u.name + '</strong>' +
+        (u.studentId ? '<br><span style="font-size:.68rem;color:var(--ink-light);font-family:monospace;letter-spacing:.03em;">' + u.studentId + '</span>' : '') +
+      '</td>' +
       '<td style="color:var(--ink-light);font-size:.78rem;">' + u.email + '</td>' +
       '<td><span class="auth-role-badge ' + (roleColors[u.role]||'') + '">' + (roleLabels[u.role]||u.role) + '</span></td>' +
       '<td>' + (u.active
@@ -2013,29 +2100,70 @@ function renderUsersTable() {
   }).join('');
 }
 
-function addUser() {
+// Pending warning state for email — user must confirm before proceeding
+var _pendingUserData = null;
+
+function addUser(confirmed) {
   var name     = document.getElementById('new-name').value.trim();
   var email    = document.getElementById('new-email').value.trim().toLowerCase();
   var password = document.getElementById('new-password').value;
   var role     = document.getElementById('new-role').value;
   var msg      = document.getElementById('add-user-msg');
-  if (!name || !email || !password) { msg.style.color='#DC2626'; msg.textContent='All fields required.'; return; }
-  // Permission check — enforce server-side equivalent when backend is added
+
+  if (!name || !email || !password) {
+    msg.style.color = '#DC2626'; msg.textContent = 'All fields required.'; return;
+  }
+  // Permission check
   if (!can('users.create.' + role)) {
-    msg.style.color='#DC2626'; msg.textContent='You do not have permission to create this role.'; return;
+    msg.style.color = '#DC2626'; msg.textContent = 'You do not have permission to create this role.'; return;
   }
+  // Email validation
+  var validation = validateEmailForUser(email);
+  if (!validation.ok) {
+    msg.style.color = '#DC2626'; msg.textContent = validation.error; return;
+  }
+  // Warning: historically used email — require explicit confirmation
+  if (validation.warning && !confirmed) {
+    msg.style.color = '#B45309';
+    msg.innerHTML = '⚠️ ' + validation.warning +
+      ' <button type="button" class="tbl-btn" style="margin-left:.5rem;" ' +
+      'onclick="addUser(true)">Confirm anyway</button>';
+    return;
+  }
+
+  // Generate student ID if role is student
+  var studentId    = null;
+  var emailHistory = [email];
+  if (role === 'student') {
+    studentId = generateStudentId();
+    recordEmailHistory(email, studentId);
+  }
+
   var users = getUsers();
-  if (users.find(function(u){ return u.email.toLowerCase()===email; })) {
-    msg.style.color='#DC2626'; msg.textContent='Email already exists.'; return;
-  }
-  users.push({id:'u'+Date.now(), name:name, email:email, password:password, role:role, active:true, assignedTeacher:null, products:[], assignedClasses:null});
+  users.push({
+    id:             'u' + Date.now(),
+    name:           name,
+    email:          email,
+    password:       password,
+    role:           role,
+    active:         true,
+    assignedTeacher:null,
+    products:       [],
+    assignedClasses:null,
+    studentId:      studentId,      // null for non-students
+    emailHistory:   emailHistory,   // tracks all emails ever used on this account
+  });
   saveUsers(users);
-  msg.style.color='var(--teal)'; msg.textContent = name + ' added!';
-  document.getElementById('new-name').value = '';
-  document.getElementById('new-email').value = '';
-  document.getElementById('new-password').value = '';
+  _pendingUserData = null;
+
+  var successMsg = name + ' added!';
+  if (studentId) successMsg += ' · ID: ' + studentId;
+  msg.style.color = 'var(--teal)'; msg.textContent = successMsg;
+  document.getElementById('new-name').value    = '';
+  document.getElementById('new-email').value   = '';
+  document.getElementById('new-password').value= '';
   renderUsersTable();
-  setTimeout(function(){ msg.textContent=''; }, 3000);
+  setTimeout(function(){ msg.textContent = ''; }, 5000);
 }
 
 function toggleUserActive(id, active) {
@@ -2065,9 +2193,14 @@ function renderAdminStudents() {
     return '<div class="dash-card" style="margin-bottom:1rem;">' +
       '<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">' +
         '<div style="font-size:1.3rem;">👤</div>' +
-        '<div><div style="font-weight:500;">' + s.name + '</div>' +
-        '<div style="font-size:.76rem;color:var(--ink-light);">' + s.email + ' · ' + pct + '% complete</div></div>' +
-        '<div style="margin-left:auto;font-size:.8rem;color:var(--ink-light);">Teacher: ' + (teacher?teacher.name:'Unassigned') + '</div>' +
+        '<div style="flex:1;">' +
+          '<div style="display:flex;align-items:center;gap:.6rem;">' +
+            '<span style="font-weight:500;">' + s.name + '</span>' +
+            (s.studentId ? '<span style="font-size:.68rem;font-family:monospace;padding:.1rem .4rem;background:var(--lilac-light);color:var(--purple);border-radius:4px;letter-spacing:.04em;">' + s.studentId + '</span>' : '') +
+          '</div>' +
+          '<div style="font-size:.76rem;color:var(--ink-light);margin-top:.1rem;">' + s.email + ' · ' + pct + '% complete · Teacher: ' + (teacher?teacher.name:'Unassigned') + '</div>' +
+        '</div>' +
+        '<div style="font-size:.75rem;color:var(--ink-light);">' + (s.active ? '● Active' : '○ Inactive') + '</div>' +
       '</div>' +
       '<div style="height:6px;background:var(--border);border-radius:3px;">' +
         '<div style="height:100%;border-radius:3px;background:var(--teal);width:' + pct + '%;"></div>' +
@@ -3146,6 +3279,14 @@ function switchMode(mode) {
 // ══════════════════════════════════════════════════════════════
 function renderStudentPortal() {
   document.getElementById('student-name-display').textContent = currentStudent.name.split(' ')[0] + '!';
+  // Show student ID if available
+  var idEl = document.getElementById('student-id-display');
+  if (idEl) {
+    var userRecord = window.CURRENT_USER
+      ? (getUsers().find(function(u){ return u.id === window.CURRENT_USER.id; }) || window.CURRENT_USER)
+      : null;
+    idEl.textContent = (userRecord && userRecord.studentId) ? 'Student ID: ' + userRecord.studentId : '';
+  }
   if (currentStudentMode === 'units') renderStudentUnits();
   else if (currentStudentMode === 'classes') renderStudentClasses();
   else if (currentStudentMode === 'class') renderStudentClass();
