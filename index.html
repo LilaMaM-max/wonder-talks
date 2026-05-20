@@ -1696,6 +1696,50 @@ function saveSettings(s) {
 // Current logged-in user
 window.CURRENT_USER = null;
 
+// ── SESSION & NAV PERSISTENCE ───────────────────────────────
+// Architecture note: su_session stores only the userId.
+// To migrate to a backend, replace saveSession/clearSession with
+// a token-based approach without touching any other code.
+var _SESSION_KEY = 'su_session';
+var _NAV_KEY     = 'su_nav';
+
+function saveSession(user) {
+  try { localStorage.setItem(_SESSION_KEY, JSON.stringify({ userId: user.id })); } catch(e) {}
+}
+function clearSession() {
+  localStorage.removeItem(_SESSION_KEY);
+  localStorage.removeItem(_NAV_KEY);
+}
+function saveNav() {
+  try {
+    localStorage.setItem(_NAV_KEY, JSON.stringify({
+      mode:           window.currentMode        || 'teacher',
+      teacherView:    window.currentTeacherView || 'v-dashboard',
+      teacherClass:   window.currentClassNum    || null,
+      teacherStage:   window.currentStage       || 'overview',
+      studentMode:    window.currentStudentMode || 'units',
+      studentUnitId:  window.currentStudentUnit ? window.currentStudentUnit.id : null,
+      studentClass:   window.currentStudentClass  || null,
+      studentStage:   window.currentStudentStage  || 'vocab',
+    }));
+  } catch(e) {}
+}
+function _restoreNavState(nav) {
+  if (!nav) return;
+  if (nav.studentMode)  window.currentStudentMode  = nav.studentMode;
+  if (nav.studentStage) window.currentStudentStage = nav.studentStage;
+  if (nav.studentClass) window.currentStudentClass = nav.studentClass;
+  if (nav.studentUnitId) {
+    window.currentStudentUnit = (typeof UNITS_META !== 'undefined')
+      ? (UNITS_META.find(function(u){ return u.id === nav.studentUnitId; }) || null)
+      : null;
+  }
+  if (nav.teacherClass) {
+    window.currentClassNum = nav.teacherClass;
+    window.currentStage    = nav.teacherStage || 'overview';
+  }
+}
+
 // ── LOGIN ──────────────────────────────────────────────────
 function doLogin() {
   var email    = document.getElementById('login-email').value.trim().toLowerCase();
@@ -1710,6 +1754,7 @@ function doLogin() {
   }
   errEl.classList.remove('show');
   window.CURRENT_USER = user;
+  saveSession(user);
   document.getElementById('auth-overlay').style.display = 'none';
   applyRoleAccess(user);
 }
@@ -1809,6 +1854,7 @@ function doSubmitTicket() {
 }
 
 function doLogout() {
+  clearSession();
   window.CURRENT_USER = null;
   // Reset nav buttons visibility
   ['btn-teacher','btn-student','btn-dashboard','btn-roster'].forEach(function(id){
@@ -2343,6 +2389,7 @@ function toggleSidebarUnit(uid) {
 // VIEWS
 // ══════════════════════════════════════════════════════════════
 function showView(id) {
+  window.currentTeacherView = id;
   document.querySelectorAll('#mode-teacher .view').forEach(v => v.classList.remove('active'));
   var el = document.getElementById(id);
   if (el) {
@@ -2352,6 +2399,7 @@ function showView(id) {
     if (main) main.scrollTop = 0;
     window.scrollTo(0, 0);
   }
+  saveNav();
 }
 
 function setNavActive(id) {
@@ -2533,6 +2581,7 @@ function openUnit(uid) {
 function openClass(cn) {
   currentClassNum = cn;
   currentStage = 'overview';
+  saveNav();
   // Update sidebar active state
   document.querySelectorAll('.sidebar-class-btn').forEach(b => b.classList.remove('active'));
   const sb = document.getElementById('sb-cls-'+cn);
@@ -2587,6 +2636,7 @@ function renderClassDetail(cn) {
 
 function switchStage(stage, cn) {
   currentStage = stage;
+  saveNav();
   document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('stage-btn-'+stage);
   if (btn) btn.classList.add('active');
@@ -2973,6 +3023,7 @@ function markComplete(cn) {
 // ══════════════════════════════════════════════════════════════
 function switchMode(mode) {
   currentMode = mode;
+  saveNav();
   document.getElementById('mode-teacher').style.display = mode==='teacher' ? '' : 'none';
   document.getElementById('mode-student').style.display = mode==='student' ? '' : 'none';
   // Update nav button active states
@@ -2996,6 +3047,7 @@ function renderStudentPortal() {
 
 function renderStudentUnits() {
   currentStudentMode = 'units';
+  saveNav();
   let html = `<div class="student-units">`;
   UNITS_META.forEach(u => {
     const done = u.classes.filter(c => COMPLETIONS.has(c)).length;
@@ -3015,6 +3067,7 @@ function renderStudentUnits() {
 function studentOpenUnit(uid) {
   currentStudentUnit = UNITS_META.find(u => u.id === uid);
   currentStudentMode = 'classes';
+  saveNav();
   renderStudentClasses();
 }
 
@@ -3047,6 +3100,7 @@ function studentOpenClass(cn) {
   currentStudentClass = cn;
   currentStudentMode = 'class';
   currentStudentStage = 'vocab';
+  saveNav();
   renderStudentClass();
 }
 
@@ -3083,6 +3137,7 @@ function renderStudentClass() {
 
 function switchStudentStage(s) {
   currentStudentStage = s;
+  saveNav();
   const cn = currentStudentClass;
   const data = getClassData(cn);
   document.querySelectorAll('.student-stage-btn').forEach(function(b) {
@@ -7829,6 +7884,42 @@ const UNITS9_REMAINING = {
     });
   } catch(e) {
     console.error('❌ Init error:', e);
+  }
+
+  // ── AUTO-RESTORE SESSION ───────────────────────────────────
+  try {
+    var _rawSession = localStorage.getItem(_SESSION_KEY);
+    if (_rawSession) {
+      var _sess = JSON.parse(_rawSession);
+      var _allUsers = getUsers();
+      var _savedUser = _allUsers.find(function(u){ return u.id === _sess.userId && u.active; });
+      if (_savedUser) {
+        var _nav = null;
+        try { _nav = JSON.parse(localStorage.getItem(_NAV_KEY) || 'null'); } catch(e2) {}
+        // Restore nav state vars before applyRoleAccess so student portal
+        // renders the right view immediately (renderStudentPortal reads these vars)
+        _restoreNavState(_nav);
+        window.CURRENT_USER = _savedUser;
+        applyRoleAccess(_savedUser);
+        // Teachers: applyRoleAccess forces v-dashboard, so restore their view after
+        if (_nav && (_savedUser.role === 'teacher' || _savedUser.role === 'admin' || _savedUser.role === 'sub-admin')) {
+          var _tv = _nav.teacherView;
+          var _tc = _nav.teacherClass;
+          if (_tv && _tv !== 'v-dashboard') {
+            setTimeout(function() {
+              if (_tv === 'v-class' && _tc) { openClass(_tc); }
+              else { showView(_tv); }
+            }, 0);
+          }
+        }
+      } else {
+        // User deactivated or removed — clear stale session
+        clearSession();
+      }
+    }
+  } catch(e) {
+    console.warn('Session restore failed, clearing:', e);
+    clearSession();
   }
 })();
 </script>
