@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wonder Amplify</title>
+<title>Wonder Talks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
@@ -250,6 +250,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .su-sub{font-size:.75rem;color:var(--ink-light);}
 .su-progress{height:4px;background:var(--border);border-radius:2px;margin-top:.75rem;}
 .su-progress-fill{height:100%;border-radius:2px;background:var(--purple);}
+
+/* ── PRODUCT & LEVEL CARDS ── */
+.student-products{padding:2.5rem 2rem;max-width:900px;margin:0 auto;}
+.student-product-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:2rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;}
+.student-product-card:hover{border-color:var(--purple);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.sp-icon{font-size:2.2rem;flex-shrink:0;}
+.sp-name{font-weight:600;font-size:1.05rem;color:var(--ink);margin-bottom:.2rem;}
+.sp-tag{display:inline-block;font-size:.7rem;font-weight:500;padding:.15rem .5rem;border-radius:20px;background:var(--lilac-light);color:var(--purple);margin-bottom:.4rem;}
+.sp-desc{font-size:.8rem;color:var(--ink-light);line-height:1.5;}
+.sp-arrow{margin-left:auto;font-size:1.2rem;color:var(--purple);opacity:.5;}
+
+.student-levels{padding:2rem 2rem 1.5rem;max-width:900px;margin:0 auto;}
+.student-level-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem 1.75rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:1.25rem;margin-bottom:.75rem;}
+.student-level-card:hover{border-color:var(--purple);box-shadow:var(--shadow);transform:translateY(-1px);}
+.sl-badge{min-width:52px;height:52px;border-radius:12px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;}
+.sl-name{font-weight:600;font-size:.95rem;color:var(--ink);margin-bottom:.15rem;}
+.sl-cefr{font-size:.72rem;color:var(--ink-light);margin-bottom:.25rem;}
+.sl-desc{font-size:.78rem;color:var(--ink-light);line-height:1.5;}
+.sl-meta{margin-left:auto;text-align:right;flex-shrink:0;}
+.sl-progress-label{font-size:.72rem;color:var(--ink-light);margin-bottom:.3rem;}
+.sl-progress{width:80px;height:5px;background:var(--border);border-radius:3px;}
+.sl-progress-fill{height:100%;border-radius:3px;background:var(--purple);}
+
+/* ── HIERARCHY BREADCRUMB ── */
+.hier-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--ink-light);margin-bottom:1.25rem;flex-wrap:wrap;}
+.hier-crumb{cursor:pointer;color:var(--teal);text-decoration:none;}
+.hier-crumb:hover{text-decoration:underline;}
+.hier-sep{opacity:.4;}
+.hier-current{color:var(--ink-mid);font-weight:500;}
+
+/* ── SIDEBAR LEVEL CONTEXT ── */
+.sidebar-ctx-block{background:var(--purple);border-radius:var(--radius-sm);margin:.75rem .75rem .25rem;padding:.65rem .9rem;}
+.sidebar-product-label{font-size:.82rem;font-weight:600;color:#fff;margin-bottom:.2rem;}
+.sidebar-level-ctx{font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.6);}
 
 .student-class-list{padding:1.5rem 2rem;}
 .student-class-item{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;margin-bottom:.5rem;cursor:pointer;transition:all .15s;}
@@ -1572,7 +1606,7 @@ z"/></symbol></svg>
 <header class="site-header">
     <div style="display:flex;align-items:center;gap:.5rem;">
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1313 670" height="44" style="display:block;flex-shrink:0;" aria-label="Wonder"><use href="#wonder-logo" width="1313" height="800"/></svg>
-    <div class="logo-product">Amplify</div>
+    <div class="logo-product">Wonder Talks</div>
   </div>
   <nav class="header-nav">
     <button type="button" class="nav-btn active" id="btn-teacher" onclick="switchMode('teacher')">👨‍🏫 Teacher</button>
@@ -1673,11 +1707,11 @@ z"/></symbol></svg>
 
 // Default users — stored in localStorage so admin changes persist
 var DEFAULT_USERS = [
-  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
-  {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
-  {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',  active:true, assignedTeacher:null,  products:['amplify'], assignedClasses:null},
-  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null, studentId:'WND-000001', emailHistory:['ana@speakup.com']},
-  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null, studentId:'WND-000002', emailHistory:['carlos@speakup.com']},
+  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify'], assignedLevels:null, assignedClasses:null},
+  {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify'], assignedLevels:null, assignedClasses:null},
+  {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',  active:true, assignedTeacher:null,  products:['amplify'], assignedLevels:null, assignedClasses:null},
+  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedLevels:null, assignedClasses:null, studentId:'WND-000001', emailHistory:['ana@speakup.com']},
+  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedLevels:null, assignedClasses:null, studentId:'WND-000002', emailHistory:['carlos@speakup.com']},
 ];
 
 function getUsers() {
@@ -1855,10 +1889,12 @@ function saveNav() {
       teacherView:    window.currentTeacherView || 'v-dashboard',
       teacherClass:   window.currentClassNum    || null,
       teacherStage:   window.currentStage       || 'overview',
-      studentMode:    window.currentStudentMode || 'units',
-      studentUnitId:  window.currentStudentUnit ? window.currentStudentUnit.id : null,
-      studentClass:   window.currentStudentClass  || null,
-      studentStage:   window.currentStudentStage  || 'vocab',
+      studentMode:      window.currentStudentMode    || 'products',
+      studentProductId: window.currentStudentProduct ? window.currentStudentProduct.id : null,
+      studentLevelId:   window.currentStudentLevel   ? window.currentStudentLevel.id   : null,
+      studentUnitId:    window.currentStudentUnit    ? window.currentStudentUnit.id    : null,
+      studentClass:     window.currentStudentClass   || null,
+      studentStage:     window.currentStudentStage   || 'vocab',
     }));
   } catch(e) {}
 }
@@ -1867,6 +1903,12 @@ function _restoreNavState(nav) {
   if (nav.studentMode)  window.currentStudentMode  = nav.studentMode;
   if (nav.studentStage) window.currentStudentStage = nav.studentStage;
   if (nav.studentClass) window.currentStudentClass = nav.studentClass;
+  if (nav.studentProductId && typeof PRODUCTS_META !== 'undefined') {
+    window.currentStudentProduct = PRODUCTS_META.find(function(p){ return p.id === nav.studentProductId; }) || null;
+  }
+  if (nav.studentLevelId && typeof LEVELS_META !== 'undefined') {
+    window.currentStudentLevel = LEVELS_META.find(function(l){ return l.id === nav.studentLevelId; }) || null;
+  }
   if (nav.studentUnitId) {
     window.currentStudentUnit = (typeof UNITS_META !== 'undefined')
       ? (UNITS_META.find(function(u){ return u.id === nav.studentUnitId; }) || null)
@@ -1937,6 +1979,8 @@ function applyRoleAccess(user) {
     var users = getUsers();
     var match = STUDENTS.find(function(s){ return s.name === user.name; });
     window.currentStudent = match || STUDENTS[0];
+    // Start at products view unless nav state already set something deeper
+    if (!window.currentStudentProduct) window.currentStudentMode = 'products';
     renderStudentPortal();
     // Hide teacher nav entirely
     var btnTeacher  = document.getElementById('btn-teacher');
@@ -2149,6 +2193,7 @@ function addUser(confirmed) {
     active:         true,
     assignedTeacher:null,
     products:       [],
+    assignedLevels: null,
     assignedClasses:null,
     studentId:      studentId,      // null for non-students
     emailHistory:   emailHistory,   // tracks all emails ever used on this account
@@ -2468,6 +2513,17 @@ var UNITS_META = [
   {id:'u9',icon:'🏦',title:'Services & Errands',classes:[65,66,67,68,69,70,71,72],desc:'Bank, post, gym, emergencies'},
 ];
 
+// ── PRODUCTS & LEVELS ──────────────────────────────────────
+var PRODUCTS_META = [
+  {id:'amplify', name:'Amplify', tagline:'A1 English', desc:'Foundation English for real-world communication', icon:'📚', levels:['a1'], active:true}
+];
+
+var LEVELS_META = [
+  {id:'a1', product:'amplify', name:'A1', title:'Beginner', cefr:'CEFR A1',
+   desc:'Foundation level — everyday situations, travel, social English',
+   units:['u1','u2','u3','u4','u5','u6','u7','u8','u9'], active:true}
+];
+
 // ── Step 1: CLASS_NAMES and CLASS_TYPES first (needed by CLASS_META) ──
 var CLASS_NAMES = {
   1:'Check-in & Boarding',2:'At the Gate',3:'On the Plane',4:'Customs & Immigration',
@@ -2548,7 +2604,9 @@ window.COMPLETIONS = new Set(JSON.parse(localStorage.getItem('su_done') || '[]')
 window.currentMode = 'teacher';
 window.currentClassNum = null;
 window.currentStage = 'overview';
-window.currentStudentMode = 'units';
+window.currentStudentMode = 'products';
+window.currentStudentProduct = null;
+window.currentStudentLevel = null;
 window.currentStudentUnit = null;
 window.currentStudentClass = null;
 window.currentStudentStage = 'vocab';
@@ -2584,7 +2642,21 @@ function getClassData(n) { return buildClassData()[n] || null; }
 function buildSidebar() {
   const sb = document.getElementById('sidebar');
   const allowed = teacherAllowedClasses();
-  let html = '<div class="sidebar-section">Units & Classes</div>';
+  // Show product & level context at the top of the sidebar
+  const userProducts = (window.CURRENT_USER && !can('admin.panel'))
+    ? (getUsers().find(function(u){ return u.id === window.CURRENT_USER.id; }) || window.CURRENT_USER).products || []
+    : Object.keys(PRODUCT_CLASSES);
+  let ctxHtml = '';
+  userProducts.forEach(function(pid) {
+    const pm = PRODUCTS_META.find(function(p){ return p.id === pid; });
+    if (!pm) return;
+    const lvNames = LEVELS_META.filter(function(l){ return l.product === pid && l.active; }).map(function(l){ return l.name; }).join(', ');
+    ctxHtml += `<div class="sidebar-ctx-block">
+      <div class="sidebar-product-label">${pm.icon} ${pm.name}</div>
+      <div class="sidebar-level-ctx">${lvNames}</div>
+    </div>`;
+  });
+  let html = ctxHtml + '<div class="sidebar-section">Units & Classes</div>';
   UNITS_META.forEach(u => {
     const unitClasses = u.classes.filter(cn => allowed.indexOf(cn) >= 0);
     if (!unitClasses.length) return; // skip units with no accessible classes
@@ -3287,9 +3359,12 @@ function renderStudentPortal() {
       : null;
     idEl.textContent = (userRecord && userRecord.studentId) ? 'Student ID: ' + userRecord.studentId : '';
   }
-  if (currentStudentMode === 'units') renderStudentUnits();
-  else if (currentStudentMode === 'classes') renderStudentClasses();
-  else if (currentStudentMode === 'class') renderStudentClass();
+  if      (currentStudentMode === 'products') renderStudentProducts();
+  else if (currentStudentMode === 'levels')   renderStudentLevels();
+  else if (currentStudentMode === 'units')    renderStudentUnits();
+  else if (currentStudentMode === 'classes')  renderStudentClasses();
+  else if (currentStudentMode === 'class')    renderStudentClass();
+  else renderStudentProducts();
 }
 
 // ── PRODUCT → CLASS MAP ─────────────────────────────────────
@@ -3307,6 +3382,25 @@ function studentAllowedProducts() {
   if (can('admin.panel') || user.role === 'teacher') return Object.keys(PRODUCT_CLASSES);
   var userRecord = getUsers().find(function(u){ return u.id === user.id; }) || user;
   return userRecord.products || [];
+}
+
+// Returns level IDs the student is allowed to see for a given product.
+// If the user has no explicit assignedLevels, all active levels for the product are returned.
+function studentAllowedLevels(productId) {
+  var user = window.CURRENT_USER;
+  if (!user) return [];
+  if (can('admin.panel') || user.role === 'teacher') {
+    return LEVELS_META.filter(function(l){ return l.product === productId && l.active; }).map(function(l){ return l.id; });
+  }
+  var userRecord = getUsers().find(function(u){ return u.id === user.id; }) || user;
+  if (userRecord.assignedLevels && userRecord.assignedLevels.length) {
+    return userRecord.assignedLevels.filter(function(lid){
+      var lv = LEVELS_META.find(function(l){ return l.id === lid; });
+      return lv && lv.product === productId && lv.active;
+    });
+  }
+  // Default: all active levels for the product
+  return LEVELS_META.filter(function(l){ return l.product === productId && l.active; }).map(function(l){ return l.id; });
 }
 
 // Returns true if a class belongs to an allowed product AND passes any
@@ -3367,8 +3461,13 @@ function teacherAllowedStudents() {
   return STUDENTS.filter(function(s){ return assignedNames.indexOf(s.name) >= 0; });
 }
 
-function renderStudentUnits() {
-  currentStudentMode = 'units';
+// ── PRODUCT → LEVEL → UNIT → CLASS NAVIGATION ──────────────
+
+function renderStudentProducts() {
+  currentStudentMode = 'products';
+  currentStudentProduct = null;
+  currentStudentLevel = null;
+  currentStudentUnit = null;
   saveNav();
   var allowedProducts = studentAllowedProducts();
   if (!allowedProducts.length) {
@@ -3376,11 +3475,88 @@ function renderStudentUnits() {
       '<div style="padding:2rem;text-align:center;color:var(--ink-light);">No products assigned yet. Please contact your teacher or admin.</div>';
     return;
   }
-  let html = `<div class="student-units">`;
+  var html = '<div class="student-products">';
+  var visible = PRODUCTS_META.filter(function(p){ return allowedProducts.indexOf(p.id) >= 0 && p.active; });
+  visible.forEach(function(p) {
+    html += `<div class="student-product-card" onclick="studentOpenProduct('${p.id}')">
+      <div class="sp-icon">${p.icon}</div>
+      <div style="flex:1;">
+        <div class="sp-name">${p.name}</div>
+        <span class="sp-tag">${p.tagline}</span>
+        <div class="sp-desc">${p.desc}</div>
+      </div>
+      <div class="sp-arrow">›</div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('student-view-content').innerHTML = html;
+}
+
+function studentOpenProduct(pid) {
+  currentStudentProduct = PRODUCTS_META.find(function(p){ return p.id === pid; }) || null;
+  currentStudentMode = 'levels';
+  saveNav();
+  renderStudentLevels();
+}
+
+function renderStudentLevels() {
+  const p = currentStudentProduct;
+  if (!p) { renderStudentProducts(); return; }
+  const crumb = `<div class="hier-breadcrumb">
+    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+    <span class="hier-sep">›</span>
+    <span class="hier-current">${p.name}</span>
+  </div>`;
+  const allowedLevelIds = studentAllowedLevels(p.id);
+  const levels = LEVELS_META.filter(function(l){ return l.product === p.id && l.active && allowedLevelIds.indexOf(l.id) >= 0; });
+  let html = `<div class="student-levels">${crumb}`;
+  levels.forEach(function(lv) {
+    const lvUnits = (lv.units||[]).map(function(uid){ return UNITS_META.find(function(u){ return u.id===uid; }); }).filter(Boolean);
+    const totalCls = lvUnits.reduce(function(s,u){ return s + u.classes.filter(classAllowedForStudent).length; }, 0);
+    const doneCls  = lvUnits.reduce(function(s,u){ return s + u.classes.filter(function(cn){ return classAllowedForStudent(cn) && COMPLETIONS.has(cn); }).length; }, 0);
+    const pct = totalCls ? Math.round(doneCls/totalCls*100) : 0;
+    html += `<div class="student-level-card" onclick="studentOpenLevel('${lv.id}')">
+      <div class="sl-badge">${lv.name}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:.95rem;color:var(--ink);margin-bottom:.15rem;">${lv.title} <span style="font-size:.72rem;font-weight:400;color:var(--ink-light);">${lv.cefr}</span></div>
+        <div style="font-size:.8rem;color:var(--ink-light);margin-bottom:.5rem;">${lv.desc}</div>
+        <div style="height:4px;width:160px;background:var(--border);border-radius:2px;">
+          <div style="height:100%;border-radius:2px;background:var(--purple);width:${pct}%"></div>
+        </div>
+        <div style="font-size:.7rem;color:var(--ink-light);margin-top:.3rem;">${doneCls}/${totalCls} classes complete</div>
+      </div>
+      <div class="sp-arrow">›</div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('student-view-content').innerHTML = html;
+}
+
+function studentOpenLevel(lid) {
+  currentStudentLevel = LEVELS_META.find(function(l){ return l.id === lid; }) || null;
+  currentStudentMode = 'units';
+  saveNav();
+  renderStudentUnits();
+}
+
+function renderStudentUnits() {
+  currentStudentMode = 'units';
+  saveNav();
+  const p  = currentStudentProduct;
+  const lv = currentStudentLevel;
+  const crumb = `<div class="hier-breadcrumb">
+    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+    <span class="hier-sep">›</span>
+    ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep">›</span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep">›</span>` : ''}
+    <span class="hier-current">Units</span>
+  </div>`;
+  let html = `<div class="student-units">${crumb}`;
   UNITS_META.forEach(u => {
-    // Filter classes in this unit to those the student can access
+    // If a level is active, only show units belonging to it
+    if (lv && lv.units && lv.units.indexOf(u.id) < 0) return;
     const accessibleClasses = u.classes.filter(classAllowedForStudent);
-    if (!accessibleClasses.length) return; // skip entire unit if no accessible classes
+    if (!accessibleClasses.length) return;
     const done = accessibleClasses.filter(c => COMPLETIONS.has(c)).length;
     const pct = Math.round(done / accessibleClasses.length * 100);
     html += `<div class="student-unit-card" onclick="studentOpenUnit('${u.id}')">
@@ -3403,15 +3579,20 @@ function studentOpenUnit(uid) {
 }
 
 function renderStudentClasses() {
-  const u = currentStudentUnit;
+  const u  = currentStudentUnit;
   if (!u) return;
-  let html = `
-    <div class="student-class-list">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
-        <button onclick="renderStudentUnits()" style="background:none;border:none;cursor:pointer;font-size:.82rem;color:var(--teal);">← All Units</button>
-        <span style="font-size:1rem;">${u.icon}</span>
-        <span style="font-weight:500;">${u.title}</span>
-      </div>`;
+  const p  = currentStudentProduct;
+  const lv = currentStudentLevel;
+  const crumb = `<div class="hier-breadcrumb">
+    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+    <span class="hier-sep">›</span>
+    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep">›</span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep">›</span>` : ''}
+    <span class="hier-crumb" onclick="renderStudentUnits()">Units</span>
+    <span class="hier-sep">›</span>
+    <span class="hier-current">${u.icon} ${u.title}</span>
+  </div>`;
+  let html = `<div class="student-class-list">${crumb}`;
   u.classes.filter(classAllowedForStudent).forEach(cn => {
     const done = COMPLETIONS.has(cn);
     const meta = CLASS_META[cn];
@@ -3436,19 +3617,31 @@ function studentOpenClass(cn) {
 }
 
 function renderStudentClass() {
-  const cn = currentStudentClass;
+  const cn   = currentStudentClass;
   const data = getClassData(cn);
   const meta = CLASS_META[cn];
   const done = COMPLETIONS.has(cn);
-  const u = currentStudentUnit || UNITS_META.find(u => u.classes.includes(cn));
+  const u    = currentStudentUnit || UNITS_META.find(u => u.classes.includes(cn));
+  const p    = currentStudentProduct;
+  const lv   = currentStudentLevel;
+
+  const crumb = `<div class="hier-breadcrumb">
+    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+    <span class="hier-sep">›</span>
+    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep">›</span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep">›</span>` : ''}
+    ${u  ? `<span class="hier-crumb" onclick="renderStudentUnits()">Units</span><span class="hier-sep">›</span><span class="hier-crumb" onclick="renderStudentClasses()">${u.icon} ${u.title}</span><span class="hier-sep">›</span>` : ''}
+    <span class="hier-current">Class ${cn}</span>
+  </div>`;
 
   const stages = ['vocab','listen','dialogue','grammar','exercises','pronunciation'];
   const stageLabels = {vocab:'📝\nVocab',listen:'🔊\nListen',dialogue:'💬\nDialogue',grammar:'📐\nGrammar',exercises:'✏️\nExercises',pronunciation:'🗣️\nPronunc.'};
 
   let html = `<div class="student-class-detail">
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-      <button onclick="renderStudentClasses()" style="background:none;border:none;cursor:pointer;font-size:.82rem;color:var(--teal);">← ${u?.title||'Unit'}</button>
-      <span style="font-size:.82rem;color:var(--ink-light);">Class ${cn}: ${meta?.name}</span>
+    ${crumb}
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:1.05rem;font-weight:600;color:var(--ink);">${meta?.name||'Class '+cn}</div>
+      <div style="font-size:.78rem;color:var(--ink-light);margin-top:.15rem;">${u?.title||''} · Class ${cn}</div>
     </div>
     <div class="student-stages-bar">
       ${stages.map(s => `<button class="student-stage-btn ${s===currentStudentStage?'active':''}" data-stage="${s}" onclick="switchStudentStage('${s}')">
