@@ -1672,11 +1672,11 @@ z"/></symbol></svg>
 
 // Default users — stored in localStorage so admin changes persist
 var DEFAULT_USERS = [
-  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify']},
-  {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify']},
-  {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',   active:true, assignedTeacher:null, products:['amplify']},
-  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',   active:true, assignedTeacher:'u1',  products:['amplify']},
-  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',   active:true, assignedTeacher:'u1',  products:['amplify']},
+  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
+  {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify'], assignedClasses:null},
+  {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',  active:true, assignedTeacher:null,  products:['amplify'], assignedClasses:null},
+  {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null},
+  {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',  active:true, assignedTeacher:'u1',  products:['amplify'], assignedClasses:null},
 ];
 
 function getUsers() {
@@ -1709,7 +1709,7 @@ var PERMISSIONS = {
   // User management
   'users.view':              ['admin','operator'],
   'users.create.admin':      ['admin'],
-  'users.create.operator':   ['admin'],
+  'users.create.operator':   ['admin','operator'],
   'users.create.teacher':    ['admin','operator'],
   'users.create.student':    ['admin','operator','teacher'],
   'users.delete':            ['admin','operator'],
@@ -2028,7 +2028,7 @@ function addUser() {
   if (users.find(function(u){ return u.email.toLowerCase()===email; })) {
     msg.style.color='#DC2626'; msg.textContent='Email already exists.'; return;
   }
-  users.push({id:'u'+Date.now(), name:name, email:email, password:password, role:role, active:true, assignedTeacher:null, products:[]});
+  users.push({id:'u'+Date.now(), name:name, email:email, password:password, role:role, active:true, assignedTeacher:null, products:[], assignedClasses:null});
   saveUsers(users);
   msg.style.color='var(--teal)'; msg.textContent = name + ' added!';
   document.getElementById('new-name').value = '';
@@ -2450,17 +2450,20 @@ function getClassData(n) { return buildClassData()[n] || null; }
 // ══════════════════════════════════════════════════════════════
 function buildSidebar() {
   const sb = document.getElementById('sidebar');
+  const allowed = teacherAllowedClasses();
   let html = '<div class="sidebar-section">Units & Classes</div>';
   UNITS_META.forEach(u => {
-    const done = u.classes.filter(c => COMPLETIONS.has(c)).length;
+    const unitClasses = u.classes.filter(cn => allowed.indexOf(cn) >= 0);
+    if (!unitClasses.length) return; // skip units with no accessible classes
+    const done = unitClasses.filter(c => COMPLETIONS.has(c)).length;
     html += `<div class="sidebar-unit" id="sb-${u.id}">
       <div class="sidebar-unit-header" onclick="toggleSidebarUnit('${u.id}')">
         <span class="sidebar-unit-icon">${u.icon}</span>
         <span class="sidebar-unit-title">${u.title}</span>
-        <span class="sidebar-unit-count">${done}/${u.classes.length}</span>
+        <span class="sidebar-unit-count">${done}/${unitClasses.length}</span>
       </div>
       <div class="sidebar-classes">`;
-    u.classes.forEach(cn => {
+    unitClasses.forEach(cn => {
       const done = COMPLETIONS.has(cn);
       html += `<button class="sidebar-class-btn ${done?'done':''}" id="sb-cls-${cn}" onclick="openClass(${cn})">
         <span class="sidebar-class-dot"></span>${CLASS_META[cn]?.name||'Class '+cn}
@@ -2530,20 +2533,24 @@ function renderDashboard() {
     greetEl.innerHTML = tod + ', <em>' + firstName + '!</em>';
   }
   document.getElementById('stat-done').textContent = COMPLETIONS.size;
-  // Units grid
+  // Units grid — filtered by teacher's allowed classes
+  const allowedCls = teacherAllowedClasses();
   let ug = '';
   UNITS_META.forEach(u => {
-    const done = u.classes.filter(c => COMPLETIONS.has(c)).length;
+    const unitClasses = u.classes.filter(cn => allowedCls.indexOf(cn) >= 0);
+    if (!unitClasses.length) return;
+    const done = unitClasses.filter(c => COMPLETIONS.has(c)).length;
     ug += `<div class="unit-mini" onclick="openUnit('${u.id}')">
       <div class="unit-mini-icon">${u.icon}</div>
       <div class="unit-mini-title">${u.title}</div>
-      <div class="unit-mini-sub">${done}/${u.classes.length} classes</div>
+      <div class="unit-mini-sub">${done}/${unitClasses.length} classes</div>
     </div>`;
   });
   document.getElementById('dash-units-grid').innerHTML = ug;
-  // Roster preview
+  // Roster preview — filtered by teacher's assigned students
+  const visibleStudents = teacherAllowedStudents();
   let rl = '';
-  STUDENTS.forEach(s => {
+  visibleStudents.forEach(s => {
     const pct = Math.round(s.progress.done.length / 72 * 100);
     rl += `<div class="roster-item" onclick="openProfile('${s.id}')">
       <div class="roster-avatar">${s.avatar}</div>
@@ -2558,7 +2565,8 @@ function renderDashboard() {
       </div>
     </div>`;
   });
-  document.getElementById('dash-roster').innerHTML = rl;
+  document.getElementById('dash-roster').innerHTML = rl ||
+    '<p style="font-size:.84rem;color:var(--ink-light);padding:.5rem 0;">No students assigned yet.</p>';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2566,7 +2574,13 @@ function renderDashboard() {
 // ══════════════════════════════════════════════════════════════
 function renderRosterPage() {
   let html = '';
-  STUDENTS.forEach(s => {
+  const visibleStudents = teacherAllowedStudents();
+  if (!visibleStudents.length) {
+    document.getElementById('roster-full').innerHTML =
+      '<p style="color:var(--ink-light);padding:1rem 0;">No students assigned to you yet.</p>';
+    return;
+  }
+  visibleStudents.forEach(s => {
     const pct = Math.round(s.progress.done.length / 72 * 100);
     html += `<div class="dash-card" style="margin-bottom:1rem;">
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">
@@ -3137,25 +3151,79 @@ function renderStudentPortal() {
   else if (currentStudentMode === 'class') renderStudentClass();
 }
 
-// Returns the product IDs the current student is allowed to access
-function studentAllowedProducts() {
-  var user = window.CURRENT_USER;
-  if (!user) return [];
-  if (can('admin.panel') || can('portal.teacher')) return ['amplify']; // admin/operator/teacher previewing
-  return user.products || [];
-}
-
-// Returns true if a class (by number) belongs to an allowed product
-// Currently all 72 classes belong to 'amplify'. Extend this map as products are added.
+// ── PRODUCT → CLASS MAP ─────────────────────────────────────
+// Single place to extend when new products are added.
 var PRODUCT_CLASSES = {
   amplify: Array.from({length:72}, function(_,i){ return i+1; })
 };
+
+// ── STUDENT ACCESS HELPERS ──────────────────────────────────
+// Returns the product IDs the current student is allowed to access.
+function studentAllowedProducts() {
+  var user = window.CURRENT_USER;
+  if (!user) return [];
+  // Admin/Operator/Teacher previewing student portal → see everything
+  if (can('admin.panel') || user.role === 'teacher') return Object.keys(PRODUCT_CLASSES);
+  var userRecord = getUsers().find(function(u){ return u.id === user.id; }) || user;
+  return userRecord.products || [];
+}
+
+// Returns true if a class belongs to an allowed product AND passes any
+// explicit assignedClasses restriction on the student's user record.
 function classAllowedForStudent(cn) {
+  var user = window.CURRENT_USER;
   var allowed = studentAllowedProducts();
-  return allowed.some(function(pid) {
-    var list = PRODUCT_CLASSES[pid] || [];
-    return list.indexOf(cn) >= 0;
+  var productAllowed = allowed.some(function(pid) {
+    return (PRODUCT_CLASSES[pid] || []).indexOf(cn) >= 0;
   });
+  if (!productAllowed) return false;
+  // If the student has explicit class restrictions, honour them
+  if (user && user.role === 'student') {
+    var userRecord = getUsers().find(function(u){ return u.id === user.id; }) || user;
+    if (userRecord.assignedClasses && userRecord.assignedClasses.length) {
+      return userRecord.assignedClasses.indexOf(cn) >= 0;
+    }
+  }
+  return true;
+}
+
+// ── TEACHER ACCESS HELPERS ──────────────────────────────────
+// Returns class numbers the current teacher is allowed to see.
+// Admins/Operators always get everything.
+function teacherAllowedClasses() {
+  var user = window.CURRENT_USER;
+  if (!user) return [];
+  if (can('admin.panel')) return Array.from({length:72}, function(_,i){ return i+1; });
+  var userRecord = getUsers().find(function(u){ return u.id === user.id; }) || user;
+  var products = (userRecord.products && userRecord.products.length)
+    ? userRecord.products : Object.keys(PRODUCT_CLASSES);
+  var classes = [];
+  products.forEach(function(pid) {
+    (PRODUCT_CLASSES[pid] || []).forEach(function(cn) {
+      if (classes.indexOf(cn) < 0) classes.push(cn);
+    });
+  });
+  // Further restrict if teacher has explicit class assignments
+  if (userRecord.assignedClasses && userRecord.assignedClasses.length) {
+    classes = classes.filter(function(cn) {
+      return userRecord.assignedClasses.indexOf(cn) >= 0;
+    });
+  }
+  return classes;
+}
+
+// Returns the STUDENTS array visible to the current user.
+// Teachers see only students assigned to them; admins/operators see all.
+function teacherAllowedStudents() {
+  var user = window.CURRENT_USER;
+  if (!user) return [];
+  if (can('admin.panel')) return STUDENTS; // admin/operator see all
+  if (user.role !== 'teacher') return STUDENTS;
+  var users = getUsers();
+  var assignedNames = users
+    .filter(function(u){ return u.role === 'student' && u.assignedTeacher === user.id; })
+    .map(function(u){ return u.name; });
+  return STUDENTS.filter(function(s){ return assignedNames.indexOf(s.name) >= 0; });
 }
 
 function renderStudentUnits() {
