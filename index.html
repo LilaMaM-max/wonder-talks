@@ -329,7 +329,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .auth-error.show{display:block;}
 .auth-role-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .65rem;border-radius:20px;font-size:.75rem;font-weight:500;margin-left:.5rem;}
 .role-admin{background:var(--purple-light);color:var(--purple);}
-.role-subadmin{background:#E0E7FF;color:#3730A3;}
+.role-operator{background:#E0E7FF;color:#3730A3;}
 .role-teacher{background:var(--lilac-light);color:var(--purple);}
 .role-student{background:#EDE0F5;color:#6B21A8;}
 
@@ -1376,6 +1376,7 @@ z"/></symbol></svg>
       <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--ink-light);text-align:center;">
         Demo accounts:<br>
         <strong>admin@speakup.com</strong> · admin123<br>
+        <strong>operator@speakup.com</strong> · operator123<br>
         <strong>teacher@speakup.com</strong> · teach123<br>
         <strong>ana@speakup.com</strong> · student123
       </div>
@@ -1671,8 +1672,8 @@ z"/></symbol></svg>
 
 // Default users — stored in localStorage so admin changes persist
 var DEFAULT_USERS = [
-  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',     active:true, assignedTeacher:null, products:['amplify']},
-  {id:'u0b',name:'Sub-Admin',    email:'subadmin@speakup.com', password:'subadmin123', role:'sub-admin', active:true, assignedTeacher:null, products:['amplify']},
+  {id:'u0', name:'Admin',        email:'admin@speakup.com',    password:'admin123',    role:'admin',    active:true, assignedTeacher:null, products:['amplify']},
+  {id:'u0b',name:'Operator',     email:'operator@speakup.com', password:'operator123', role:'operator', active:true, assignedTeacher:null, products:['amplify']},
   {id:'u1', name:'Teacher',      email:'teacher@speakup.com',  password:'teach123',    role:'teacher',   active:true, assignedTeacher:null, products:['amplify']},
   {id:'u2', name:'Ana Silva',    email:'ana@speakup.com',       password:'student123', role:'student',   active:true, assignedTeacher:'u1',  products:['amplify']},
   {id:'u3', name:'Carlos Mendes',email:'carlos@speakup.com',    password:'student123', role:'student',   active:true, assignedTeacher:'u1',  products:['amplify']},
@@ -1695,6 +1696,58 @@ function saveSettings(s) {
 
 // Current logged-in user
 window.CURRENT_USER = null;
+
+// ══════════════════════════════════════════════════════════════
+// ROLE & PERMISSION SYSTEM
+// Architecture: single source of truth for all access control.
+// To migrate to backend: replace `can()` with an API call.
+// ══════════════════════════════════════════════════════════════
+var ROLES = { ADMIN:'admin', OPERATOR:'operator', TEACHER:'teacher', STUDENT:'student' };
+
+// Each key = an action. Value = array of roles allowed to perform it.
+var PERMISSIONS = {
+  // User management
+  'users.view':              ['admin','operator'],
+  'users.create.admin':      ['admin'],
+  'users.create.operator':   ['admin'],
+  'users.create.teacher':    ['admin','operator'],
+  'users.create.student':    ['admin','operator','teacher'],
+  'users.delete':            ['admin','operator'],
+  'users.delete.admin':      ['admin'],          // only admin can delete another admin
+  'users.deactivate':        ['admin','operator'],
+  // Products
+  'products.manage':         ['admin'],           // create/delete products
+  'products.assign':         ['admin','operator'],
+  // Admin panel tabs
+  'admin.panel':             ['admin','operator'],
+  'admin.tab.users':         ['admin','operator'],
+  'admin.tab.students':      ['admin','operator'],
+  'admin.tab.products':      ['admin'],           // operator cannot touch products
+  'admin.tab.access':        ['admin','operator'],
+  'admin.tab.tickets':       ['admin','operator'],
+  'admin.tab.settings':      ['admin'],           // operator cannot change settings
+  // Preview / impersonate
+  'admin.viewas':            ['admin'],
+  // Portal access
+  'portal.teacher':          ['admin','operator','teacher'],
+  'portal.student':          ['admin','operator','teacher','student'],
+};
+
+// Central permission check — call this everywhere instead of comparing roles directly.
+function can(action, user) {
+  user = user || window.CURRENT_USER;
+  if (!user) return false;
+  var allowed = PERMISSIONS[action];
+  if (!allowed) return false;
+  return allowed.indexOf(user.role) >= 0;
+}
+
+// Helper: roles a given user is allowed to create
+function creatableRoles(user) {
+  user = user || window.CURRENT_USER;
+  var all = [ROLES.STUDENT, ROLES.TEACHER, ROLES.OPERATOR, ROLES.ADMIN];
+  return all.filter(function(r) { return can('users.create.' + r, user) || can('users.create.teacher', user) && r === ROLES.TEACHER || can('users.create.student', user) && r === ROLES.STUDENT; });
+}
 
 // ── SESSION & NAV PERSISTENCE ───────────────────────────────
 // Architecture note: su_session stores only the userId.
@@ -1775,10 +1828,10 @@ function applyRoleAccess(user) {
   // Update header to show logged-in user + logout
   renderAuthHeader(user);
 
-  if (user.role === 'admin' || user.role === 'sub-admin') {
-    // Admin / Sub-admin sees admin panel
+  if (can('admin.panel', user)) {
+    // Admin / Operator sees admin panel
     adminPanel.classList.add('active');
-    renderAdminPanel();
+    renderAdminPanel(user);
     buildSidebar();
     renderDashboard();
 
@@ -1815,8 +1868,8 @@ function applyRoleAccess(user) {
 }
 
 function renderAuthHeader(user) {
-  var roleLabels = {admin:'👑 Admin', 'sub-admin':'🔑 Sub-Admin', teacher:'👨‍🏫 Teacher', student:'👩‍🎓 Student'};
-  var roleColors = {admin:'role-admin', 'sub-admin':'role-subadmin', teacher:'role-teacher', student:'role-student'};
+  var roleLabels = {admin:'👑 Admin', operator:'🔑 Operator', teacher:'👨‍🏫 Teacher', student:'👩‍🎓 Student'};
+  var roleColors = {admin:'role-admin', operator:'role-operator', teacher:'role-teacher', student:'role-student'};
   // Find or create user info area in header
   var existing = document.getElementById('header-user-info');
   if (!existing) {
@@ -1891,9 +1944,41 @@ function showAdminTab(tab) {
   if (tab === 'tickets')  renderTicketsTab();
 }
 
-function renderAdminPanel() {
+function renderAdminPanel(user) {
+  user = user || window.CURRENT_USER;
+  // Show/hide tabs based on permissions
+  var tabMap = {
+    'users':    'admin.tab.users',
+    'students': 'admin.tab.students',
+    'products': 'admin.tab.products',
+    'access':   'admin.tab.access',
+    'tickets':  'admin.tab.tickets',
+    'settings': 'admin.tab.settings',
+  };
+  Object.keys(tabMap).forEach(function(tab) {
+    var btn = document.querySelector('.admin-tab[onclick="showAdminTab(\''+tab+'\')"]');
+    var sec = document.getElementById('admin-tab-'+tab);
+    var allowed = can(tabMap[tab], user);
+    if (btn) btn.style.display = allowed ? '' : 'none';
+    if (sec && !allowed) sec.classList.remove('active');
+  });
+  // Populate role dropdown with only roles this user can create
+  var roleSelect = document.getElementById('new-role');
+  if (roleSelect) {
+    var roleNames = {student:'Student', teacher:'Teacher', operator:'Operator', admin:'Admin'};
+    var allowed = [ROLES.STUDENT];
+    if (can('users.create.teacher', user))   allowed.push(ROLES.TEACHER);
+    if (can('users.create.operator', user))  allowed.push(ROLES.OPERATOR);
+    if (can('users.create.admin', user))     allowed.push(ROLES.ADMIN);
+    roleSelect.innerHTML = allowed.map(function(r) {
+      return '<option value="'+r+'">'+roleNames[r]+'</option>';
+    }).join('');
+  }
+  // Hide "View As" buttons for operators
+  document.querySelectorAll('[onclick^="adminViewAs"]').forEach(function(el) {
+    el.style.display = can('admin.viewas', user) ? '' : 'none';
+  });
   renderUsersTable();
-  // Pre-render other tabs in background so they're ready
   setTimeout(function(){
     renderProductsTab();
     renderTicketsTab();
@@ -1904,8 +1989,8 @@ function renderUsersTable() {
   var users = getUsers();
   var tbody = document.getElementById('users-tbody');
   if (!tbody) return;
-  var roleLabels = {admin:'👑 Admin', 'sub-admin':'🔑 Sub-Admin', teacher:'👨‍🏫 Teacher', student:'👩‍🎓 Student'};
-  var roleColors = {admin:'role-admin', 'sub-admin':'role-subadmin', teacher:'role-teacher', student:'role-student'};
+  var roleLabels = {admin:'👑 Admin', operator:'🔑 Operator', teacher:'👨‍🏫 Teacher', student:'👩‍🎓 Student'};
+  var roleColors = {admin:'role-admin', operator:'role-operator', teacher:'role-teacher', student:'role-student'};
   tbody.innerHTML = users.map(function(u, i){
     return '<tr>' +
       '<td><strong>' + u.name + '</strong></td>' +
@@ -1915,10 +2000,12 @@ function renderUsersTable() {
         ? '<span style="color:var(--teal);font-size:.78rem;">● Active</span>'
         : '<span style="color:var(--ink-light);font-size:.78rem;">○ Inactive</span>') + '</td>' +
       '<td style="display:flex;gap:.4rem;flex-wrap:wrap;">' +
-        (u.active
-          ? '<button type="button" class="tbl-btn danger" onclick="toggleUserActive(\'' + u.id + '\',false)">Deactivate</button>'
-          : '<button type="button" class="tbl-btn" onclick="toggleUserActive(\'' + u.id + '\',true)">Activate</button>') +
-        (u.role !== 'admin'
+        (can('users.deactivate') && u.role !== 'admin'
+          ? (u.active
+            ? '<button type="button" class="tbl-btn danger" onclick="toggleUserActive(\'' + u.id + '\',false)">Deactivate</button>'
+            : '<button type="button" class="tbl-btn" onclick="toggleUserActive(\'' + u.id + '\',true)">Activate</button>')
+          : '') +
+        (can(u.role === 'admin' ? 'users.delete.admin' : 'users.delete')
           ? '<button type="button" class="tbl-btn danger" onclick="deleteUser(\'' + u.id + '\')">Delete</button>'
           : '') +
       '</td>' +
@@ -1933,11 +2020,15 @@ function addUser() {
   var role     = document.getElementById('new-role').value;
   var msg      = document.getElementById('add-user-msg');
   if (!name || !email || !password) { msg.style.color='#DC2626'; msg.textContent='All fields required.'; return; }
+  // Permission check — enforce server-side equivalent when backend is added
+  if (!can('users.create.' + role)) {
+    msg.style.color='#DC2626'; msg.textContent='You do not have permission to create this role.'; return;
+  }
   var users = getUsers();
   if (users.find(function(u){ return u.email.toLowerCase()===email; })) {
     msg.style.color='#DC2626'; msg.textContent='Email already exists.'; return;
   }
-  users.push({id:'u'+Date.now(), name:name, email:email, password:password, role:role, active:true, assignedTeacher:null});
+  users.push({id:'u'+Date.now(), name:name, email:email, password:password, role:role, active:true, assignedTeacher:null, products:[]});
   saveUsers(users);
   msg.style.color='var(--teal)'; msg.textContent = name + ' added!';
   document.getElementById('new-name').value = '';
@@ -2034,6 +2125,7 @@ function resetAllProgress() {
   alert('Progress reset.');
 }
 function clearAllUsers() {
+  if (!can('admin.tab.settings')) { alert('Permission denied.'); return; }
   var users = getUsers().filter(function(u){ return u.role==='admin'; });
   saveUsers(users);
   renderUsersTable();
@@ -3045,19 +3137,49 @@ function renderStudentPortal() {
   else if (currentStudentMode === 'class') renderStudentClass();
 }
 
+// Returns the product IDs the current student is allowed to access
+function studentAllowedProducts() {
+  var user = window.CURRENT_USER;
+  if (!user) return [];
+  if (can('admin.panel') || can('portal.teacher')) return ['amplify']; // admin/operator/teacher previewing
+  return user.products || [];
+}
+
+// Returns true if a class (by number) belongs to an allowed product
+// Currently all 72 classes belong to 'amplify'. Extend this map as products are added.
+var PRODUCT_CLASSES = {
+  amplify: Array.from({length:72}, function(_,i){ return i+1; })
+};
+function classAllowedForStudent(cn) {
+  var allowed = studentAllowedProducts();
+  return allowed.some(function(pid) {
+    var list = PRODUCT_CLASSES[pid] || [];
+    return list.indexOf(cn) >= 0;
+  });
+}
+
 function renderStudentUnits() {
   currentStudentMode = 'units';
   saveNav();
+  var allowedProducts = studentAllowedProducts();
+  if (!allowedProducts.length) {
+    document.getElementById('student-view-content').innerHTML =
+      '<div style="padding:2rem;text-align:center;color:var(--ink-light);">No products assigned yet. Please contact your teacher or admin.</div>';
+    return;
+  }
   let html = `<div class="student-units">`;
   UNITS_META.forEach(u => {
-    const done = u.classes.filter(c => COMPLETIONS.has(c)).length;
-    const pct = Math.round(done / u.classes.length * 100);
+    // Filter classes in this unit to those the student can access
+    const accessibleClasses = u.classes.filter(classAllowedForStudent);
+    if (!accessibleClasses.length) return; // skip entire unit if no accessible classes
+    const done = accessibleClasses.filter(c => COMPLETIONS.has(c)).length;
+    const pct = Math.round(done / accessibleClasses.length * 100);
     html += `<div class="student-unit-card" onclick="studentOpenUnit('${u.id}')">
       <div class="su-icon">${u.icon}</div>
       <div class="su-title">${u.title}</div>
       <div class="su-sub">${u.desc}</div>
       <div class="su-progress"><div class="su-progress-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:.72rem;color:var(--ink-light);margin-top:.4rem;">${done}/${u.classes.length} complete</div>
+      <div style="font-size:.72rem;color:var(--ink-light);margin-top:.4rem;">${done}/${accessibleClasses.length} complete</div>
     </div>`;
   });
   html += '</div>';
@@ -3081,7 +3203,7 @@ function renderStudentClasses() {
         <span style="font-size:1rem;">${u.icon}</span>
         <span style="font-weight:500;">${u.title}</span>
       </div>`;
-  u.classes.forEach(cn => {
+  u.classes.filter(classAllowedForStudent).forEach(cn => {
     const done = COMPLETIONS.has(cn);
     const meta = CLASS_META[cn];
     const typeCls = {speaking:'badge-speaking',listening:'badge-listening',culture:'badge-culture'}[meta?.type]||'badge-speaking';
