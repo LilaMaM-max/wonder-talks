@@ -533,6 +533,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .pron-speak-btn{background:var(--lilac-light);border:none;cursor:pointer;font-size:.9rem;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
 .pron-speak-btn:hover{background:rgba(75,0,130,.15);}
 
+/* Accent toggle */
+.accent-toggle{display:flex;align-items:center;gap:.45rem;margin-bottom:1rem;}
+.accent-toggle-label{font-size:.72rem;color:var(--ink-light);font-weight:500;margin-right:.1rem;}
+.accent-btn{display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:14px;border:1px solid rgba(45,45,45,.12);background:transparent;cursor:pointer;font-size:.73rem;color:var(--ink-mid);transition:all .18s;font-family:inherit;}
+.accent-btn:hover{background:var(--lilac-light);border-color:rgba(75,0,130,.22);color:var(--purple);}
+.accent-btn.active{background:var(--purple);color:#fff;border-color:var(--purple);box-shadow:0 1px 6px rgba(75,0,130,.22);}
+.accent-btn .accent-flag{font-size:.85rem;line-height:1;}
+
 /* Confidence + complete */
 .confidence-card{background:var(--lilac-light);border-radius:var(--radius-sm);border:1px solid rgba(75,0,130,.15);padding:1rem 1.25rem;margin-top:1.25rem;text-align:center;}
 .confidence-card p{font-size:.85rem;color:var(--purple);font-weight:500;}
@@ -3547,16 +3555,45 @@ function renderAudio(cn, data) {
 /* ── WEB SPEECH API AUDIO ENGINE ── */
 var _ttsEl = null;
 
-// Pick the best English voices: one female, one male
+// Accent preference: 'us' (American) or 'gb' (British) — persisted in localStorage
+window._ttsAccent = (function(){ try { return localStorage.getItem('wt_tts_accent') || 'us'; } catch(e){ return 'us'; } })();
+
+// Returns the BCP-47 lang tag for the current accent preference
+function _ttsLang() {
+  return (window._ttsAccent || 'us') === 'gb' ? 'en-GB' : 'en-US';
+}
+
+// Persist accent choice, stop any playing audio, refresh accent-btn UI
+function setTtsAccent(accent) {
+  window._ttsAccent = accent;
+  try { localStorage.setItem('wt_tts_accent', accent); } catch(e){}
+  _stopCurrent();
+  document.querySelectorAll('.accent-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.accent === accent);
+  });
+}
+
+// Pick the best English voices for the selected accent (female + male)
 function _getEnVoices() {
-  var all = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-  var female = all.find(v => /samantha|zira|karen|moira|fiona|victoria|susan|kate|serena|allison|ava|linda|emma|lisa/i.test(v.name))
-            || all.find(v => /female/i.test(v.name))
-            || all[0];
-  var male   = all.find(v => /david|mark|daniel|alex|fred|thomas|james|george|lee|rishi/i.test(v.name))
-            || all.find(v => /male/i.test(v.name) && v !== female)
-            || all[1] || all[0];
-  return { female, male };
+  var all = window.speechSynthesis.getVoices();
+  var lang = _ttsLang();
+  // Prefer exact locale match, fall back gracefully to any English
+  var pool = all.filter(function(v){ return v.lang === lang; });
+  if (!pool.length) pool = all.filter(function(v){ return v.lang.startsWith(lang.substring(0,2)); });
+  if (!pool.length) pool = all.filter(function(v){ return v.lang.startsWith('en'); });
+  var femaleNames = lang === 'en-GB'
+    ? /kate|emma|serena|fiona|hazel|martha|google uk english female/i
+    : /samantha|zira|karen|moira|fiona|victoria|susan|allison|ava|linda|lisa|google us english/i;
+  var maleNames = lang === 'en-GB'
+    ? /daniel|george|oliver|arthur|rishi|google uk english male/i
+    : /david|mark|alex|fred|james|lee|google us english male/i;
+  var female = pool.find(function(v){ return femaleNames.test(v.name); })
+             || pool.find(function(v){ return /female/i.test(v.name); })
+             || pool[0];
+  var male   = pool.find(function(v){ return maleNames.test(v.name); })
+             || pool.find(function(v){ return /male/i.test(v.name) && v !== female; })
+             || pool[1] || pool[0];
+  return { female: female, male: male };
 }
 
 function _stopCurrent() {
@@ -3578,7 +3615,7 @@ function _ttsSpeak(el, text, rate) {
   if (!text) return;
   function doSpeak() {
     var utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US';
+    utter.lang = _ttsLang();
     utter.rate = parseFloat(rate) || 1;
     utter.pitch = 1;
     var v = _getEnVoices().female;
@@ -3621,7 +3658,7 @@ function playDialogue(el, cn, rate) {
       }
       var line = lines[idx++];
       var utter = new SpeechSynthesisUtterance(line.en); // only the spoken line, no role prefix
-      utter.lang = 'en-US';
+      utter.lang = _ttsLang();
       utter.rate = parseFloat(rate) || 1;
       utter.pitch = 1;
       if (voiceMap[line.sp]) utter.voice = voiceMap[line.sp];
@@ -3642,12 +3679,16 @@ function playAudio(el) {
 function speakWord(word, rate) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  var utter = new SpeechSynthesisUtterance(word);
-  utter.lang = 'en-US';
-  utter.rate = parseFloat(rate) || 0.85;
-  var v = _getEnVoices().female;
-  if (v) utter.voice = v;
-  window.speechSynthesis.speak(utter);
+  function doSpeak() {
+    var utter = new SpeechSynthesisUtterance(word);
+    utter.lang = _ttsLang();
+    utter.rate = parseFloat(rate) || 0.85;
+    var v = _getEnVoices().female;
+    if (v) utter.voice = v;
+    window.speechSynthesis.speak(utter);
+  }
+  if (window.speechSynthesis.getVoices().length) { doSpeak(); }
+  else { window.speechSynthesis.onvoiceschanged = function(){ doSpeak(); window.speechSynthesis.onvoiceschanged = null; }; }
 }
 
 // legacy stub
@@ -4414,11 +4455,21 @@ function renderStudentClass() {
   const stages = ['vocab','listen','dialogue','grammar','exercises','pronunciation'];
   const stageLabels = {vocab:'📝\nVocab',listen:'🔊\nListen',dialogue:'💬\nDialogue',grammar:'📐\nGrammar',exercises:'✏️\nExercises',pronunciation:'🗣️\nPronunc.'};
 
+  const accentUs = (window._ttsAccent||'us') === 'us';
   let html = `<div class="su-crumb-bar">${crumb}</div>
     <div class="student-class-detail">
       <div class="su-page-header">
         <h1 class="su-page-title">Class ${cn}${meta?.name ? ': ' + meta.name : ''}</h1>
         <p class="su-page-sub">${u?.title || ''}</p>
+      </div>
+      <div class="accent-toggle">
+        <span class="accent-toggle-label">Voice accent:</span>
+        <button class="accent-btn ${accentUs?'active':''}" data-accent="us" onclick="setTtsAccent('us')">
+          <span class="accent-flag">🇺🇸</span> American
+        </button>
+        <button class="accent-btn ${!accentUs?'active':''}" data-accent="gb" onclick="setTtsAccent('gb')">
+          <span class="accent-flag">🇬🇧</span> British
+        </button>
       </div>
     <div class="student-stages-bar">
       ${stages.map(s => `<button class="student-stage-btn ${s===currentStudentStage?'active':''}" data-stage="${s}" onclick="switchStudentStage('${s}')">
@@ -4628,22 +4679,17 @@ function lsToggleTranscript() {
 function speakLine(text, useMale) {
   if (!window.speechSynthesis) return;
   _stopCurrent();
-  var voices = _getEnVoices();
-  var voice = useMale ? (voices.male || voices.female) : (voices.female || voices.male);
-  var u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.rate = 0.92;
-  if (voice) u.voice = voice;
-  if (window.speechSynthesis.getVoices().length) {
+  function doSpeak() {
+    var voices = _getEnVoices();
+    var voice = useMale ? (voices.male || voices.female) : (voices.female || voices.male);
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = _ttsLang();
+    u.rate = 0.92;
+    if (voice) u.voice = voice;
     window.speechSynthesis.speak(u);
-  } else {
-    window.speechSynthesis.onvoiceschanged = function() {
-      voice = useMale ? (_getEnVoices().male||_getEnVoices().female) : (_getEnVoices().female||_getEnVoices().male);
-      if (voice) u.voice = voice;
-      window.speechSynthesis.speak(u);
-      window.speechSynthesis.onvoiceschanged = null;
-    };
   }
+  if (window.speechSynthesis.getVoices().length) { doSpeak(); }
+  else { window.speechSynthesis.onvoiceschanged = function(){ doSpeak(); window.speechSynthesis.onvoiceschanged = null; }; }
 }
 
 /* ── INLINE STUDENT QUESTIONS ── */
