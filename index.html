@@ -1959,6 +1959,11 @@ function _setNavVisibility(cfg) {
 }
 
 function applyRoleAccess(user) {
+  // Always dismiss the login overlay — needed for both doLogin() and session-restore paths.
+  // CSS default is display:flex so it must be explicitly hidden here, not only in doLogin().
+  var overlay = document.getElementById('auth-overlay');
+  if (overlay) overlay.style.display = 'none';
+
   var header      = document.querySelector('.site-header');
   var teacherMode = document.getElementById('mode-teacher');
   var studentMode = document.getElementById('mode-student');
