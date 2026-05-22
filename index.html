@@ -345,8 +345,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-resume-icon{font-size:1.25rem;flex-shrink:0;opacity:.9;}
 .s-hub-resume-main{font-size:.9rem;font-weight:500;line-height:1.3;}
 .s-hub-resume-sub{font-size:.75rem;opacity:.75;margin-top:.15rem;}
-/* Main grid */
-.s-hub-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+/* Card grid — all sections side by side */
+.s-hub-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-bottom:1.25rem;}
+@media(max-width:680px){.s-hub-cards{grid-template-columns:1fr;}}
 .s-hub-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;}
 /* Course items */
 .s-hub-course-item{display:flex;align-items:center;gap:.85rem;padding:.65rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .12s;}
@@ -3900,29 +3901,23 @@ function renderStudentProducts() {
         '</div>' +
       '</div>' +
 
-      // Continue
-      '<div class="s-hub-continue">' +
-        '<div class="s-hub-label">Continue Learning</div>' +
-        continueHtml +
-      '</div>' +
-
-      // Grid
-      '<div class="s-hub-grid">' +
-        // Left — My Courses
+      // Cards — all side by side in a 2×2 grid
+      '<div class="s-hub-cards">' +
+        '<div class="s-hub-card">' +
+          '<div class="s-hub-label">Continue Learning</div>' +
+          continueHtml +
+        '</div>' +
         '<div class="s-hub-card">' +
           '<div class="s-hub-label">My Courses</div>' +
           coursesHtml +
         '</div>' +
-        // Right — Upcoming + Notices (stacked)
-        '<div style="display:flex;flex-direction:column;gap:1.25rem;">' +
-          '<div class="s-hub-card">' +
-            '<div class="s-hub-label">Upcoming Classes</div>' +
-            upcomingHtml +
-          '</div>' +
-          '<div class="s-hub-card">' +
-            '<div class="s-hub-label">Notice Board</div>' +
-            noticeHtml +
-          '</div>' +
+        '<div class="s-hub-card">' +
+          '<div class="s-hub-label">Upcoming Classes</div>' +
+          upcomingHtml +
+        '</div>' +
+        '<div class="s-hub-card">' +
+          '<div class="s-hub-label">Notice Board</div>' +
+          noticeHtml +
         '</div>' +
       '</div>' +
 
