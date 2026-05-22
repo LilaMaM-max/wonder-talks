@@ -21,7 +21,7 @@
   --blue:var(--purple);           --blue-light:var(--purple-light);
   --green:#2D7A3A;                --green-light:#D4EDD8;
   --border:rgba(45,45,45,.12);    --border-mid:rgba(45,45,45,.2);
-  --crumb-muted:#7B72A8;
+  --crumb-muted:#8E8A9F;
   --shadow:0 2px 16px rgba(75,0,130,.08); --shadow-md:0 4px 24px rgba(75,0,130,.14);
   --radius:12px; --radius-sm:8px;
 }
@@ -291,11 +291,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 
 /* ── STUDENT PORTAL ── */
 .student-portal{background:var(--warm-white);min-height:calc(100vh - 60px);}
-.student-portal-header{background:var(--warm-white);color:var(--ink);padding:1.25rem 2rem 1rem;border-bottom:1px solid var(--border);}
-.student-portal-header h2{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink);font-style:italic;}
+.student-portal-header{background:#EFF1F6;color:var(--ink);padding:1.5rem 2rem;border-bottom:1px solid #EBEBEB;}
+.student-portal-header h2{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);font-style:italic;}
 .student-portal-header h2 span{font-style:normal;color:var(--purple);}
-.student-portal-header p{font-size:.8rem;color:var(--ink-light);margin-top:.2rem;}
-.student-units{padding:1.75rem 2rem 2.25rem;}
+.student-portal-header p{font-size:.82rem;color:var(--ink-light);margin-top:.25rem;}
+.su-crumb-bar{background:#FAFAFA;border-bottom:1px solid #EBEBEB;padding:0 2rem;}
+.su-crumb-bar .hier-breadcrumb{border-bottom:none;}
+.student-units{padding:1.5rem 2rem 2.25rem;}
 .su-page-header{margin-bottom:1.75rem;}
 .su-page-title{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--ink);margin-top:.85rem;line-height:1.2;font-style:italic;}
 .su-page-sub{font-size:.78rem;color:var(--ink-light);margin-top:.3rem;line-height:1.5;}
@@ -4217,13 +4219,13 @@ function renderStudentUnits() {
     ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     <span class="hier-current">Units</span>
   </div>`;
-  let html = `<div class="student-units">
-    <div class="su-page-header">
-      ${crumb}
-      <h1 class="su-page-title">${pageTitle}</h1>
-      <p class="su-page-sub">${pageSub}</p>
-    </div>
-    <div class="su-grid">`;
+  let html = `<div class="su-crumb-bar">${crumb}</div>
+    <div class="student-units">
+      <div class="su-page-header">
+        <h1 class="su-page-title">${pageTitle}</h1>
+        <p class="su-page-sub">${pageSub}</p>
+      </div>
+      <div class="su-grid">`;
   UNITS_META.forEach(u => {
     // If a level is active, only show units belonging to it
     if (lv && lv.units && lv.units.indexOf(u.id) < 0) return;
