@@ -345,8 +345,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-resume-icon{font-size:1.25rem;flex-shrink:0;opacity:.9;}
 .s-hub-resume-main{font-size:.9rem;font-weight:500;line-height:1.3;}
 .s-hub-resume-sub{font-size:.75rem;opacity:.75;margin-top:.15rem;}
-/* Card grid — all sections side by side */
-.s-hub-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.25rem;}
+/* Card grid — 6-col base so 5 cards fill perfectly (3×⅓ + 2×½) */
+.s-hub-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:1.25rem;margin-bottom:1.25rem;}
+.s-hub-cards>.s-hub-nav-card:nth-child(1),
+.s-hub-cards>.s-hub-nav-card:nth-child(2),
+.s-hub-cards>.s-hub-nav-card:nth-child(3){grid-column:span 2;}
+.s-hub-cards>.s-hub-nav-card:nth-child(4),
+.s-hub-cards>.s-hub-nav-card:nth-child(5){grid-column:span 3;}
+/* Tablet: 2 per row, all equal */
+@media(max-width:780px){
+  .s-hub-cards{grid-template-columns:repeat(2,1fr);}
+  .s-hub-cards>.s-hub-nav-card:nth-child(n){grid-column:span 1;}
+  .s-hub-cards>.s-hub-nav-card:last-child:nth-child(odd){grid-column:span 2;}
+}
+/* Mobile: single column */
+@media(max-width:480px){
+  .s-hub-cards{grid-template-columns:1fr;}
+  .s-hub-cards>.s-hub-nav-card:nth-child(n){grid-column:span 1;}
+}
 /* Clickable nav cards */
 .s-hub-nav-card{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s;}
 .s-hub-nav-card:hover{border-color:var(--purple);box-shadow:var(--shadow);transform:translateY(-2px);}
@@ -354,8 +370,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-card-stat{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--purple);line-height:1;margin:.25rem 0 .3rem;}
 .s-hub-card-desc{font-size:.78rem;color:var(--ink-light);line-height:1.4;}
 .s-hub-card-cta{font-size:.73rem;color:var(--purple);font-weight:500;margin-top:.9rem;}
-@media(max-width:780px){.s-hub-cards{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){.s-hub-cards{grid-template-columns:1fr;}}
 .s-hub-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;}
 /* Course items */
 .s-hub-course-item{display:flex;align-items:center;gap:.85rem;padding:.65rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .12s;}
