@@ -345,18 +345,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-resume-icon{font-size:1.25rem;flex-shrink:0;opacity:.9;}
 .s-hub-resume-main{font-size:.9rem;font-weight:500;line-height:1.3;}
 .s-hub-resume-sub{font-size:.75rem;opacity:.75;margin-top:.15rem;}
-/* Card grid — 6-col base, explicit span classes beat any cascade issue */
+/* Card grid — responsive, no gaps at any width */
 .s-hub-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:1.25rem;margin-bottom:1.25rem;}
-.s-hub-span2{grid-column:span 2;}   /* top-row cards  — ⅓ width each */
-.s-hub-span3{grid-column:span 3;}   /* bottom-row cards — ½ width each */
-@media(max-width:780px){
+.s-hub-span2{grid-column:span 2;}  /* desktop row 1: 3 × ⅓ */
+.s-hub-span3{grid-column:span 3;}  /* desktop row 2: 2 × ½  */
+/* Tablet / large phone — 4-col: 2 per row; last card fills its row */
+@media(max-width:700px){
   .s-hub-cards{grid-template-columns:repeat(4,1fr);}
-  .s-hub-span2{grid-column:span 2;} /* 2 per row */
-  .s-hub-span3{grid-column:span 2;} /* 2 per row */
+  .s-hub-span2,.s-hub-span3{grid-column:span 2;}
+  .s-hub-cards>.s-hub-nav-card:last-child{grid-column:span 4;}
 }
-@media(max-width:480px){
+/* Phone — single column */
+@media(max-width:440px){
   .s-hub-cards{grid-template-columns:1fr;}
-  .s-hub-span2,.s-hub-span3{grid-column:span 1;}
+  .s-hub-span2,.s-hub-span3,.s-hub-cards>.s-hub-nav-card:last-child{grid-column:span 1;}
 }
 /* Clickable nav cards */
 .s-hub-nav-card{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s;}
@@ -399,7 +401,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-act-meta{font-size:.72rem;color:var(--ink-light);}
 .s-hub-act-score{font-size:.82rem;font-weight:600;flex-shrink:0;}
 .s-hub-empty{font-size:.8rem;color:var(--ink-light);padding:.75rem 0;}
-@media(max-width:680px){.s-hub{padding:1.1rem 1rem;}.s-hub-grid{grid-template-columns:1fr;}.s-hub-stats-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:700px){.s-hub{padding:1rem;}}
+@media(max-width:440px){.s-hub{padding:.75rem .85rem;}}
 
 /* ── HIERARCHY BREADCRUMB ── */
 .hier-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--ink-light);margin-bottom:1.25rem;flex-wrap:wrap;}
