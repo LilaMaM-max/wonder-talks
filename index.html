@@ -70,23 +70,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 
 /* ── HOME / DASHBOARD ── */
 .dashboard{padding:2rem;}
-.dash-hero{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:var(--cream);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;}
-.dash-hero h1{font-family:'DM Serif Display',serif;font-size:1.8rem;margin-bottom:.35rem;}
-.dash-hero h1 em{color:var(--lilac);font-style:italic;}
-.dash-hero p{font-size:.9rem;color:rgba(245,240,232,.75);}
-.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--cream);border-radius:var(--radius);padding:1.25rem 1.5rem;border:1px solid var(--border);}
-.stat-number{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--purple);}
-.stat-label{font-size:.78rem;color:var(--ink-light);margin-top:.2rem;}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
-.dash-card{background:var(--cream);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);}
-.dash-card-title{font-size:.85rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-light);margin-bottom:1rem;}
-
-/* ── STUDENT ROSTER ── */
+.dash-hero{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:var(--cream);border-radius:var(--radius);padding:1.75rem 2rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.dash-hero-text h1{font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:.2rem;}
+.dash-hero-text h1 em{color:var(--lilac);font-style:italic;}
+.dash-hero-text p{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:.15rem;}
+.dash-hero-actions{display:flex;gap:.5rem;flex-shrink:0;}
+.dash-hero-btn{padding:.4rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:none;color:#fff;cursor:pointer;font-size:.78rem;transition:background .15s;white-space:nowrap;}
+.dash-hero-btn:hover{background:rgba(255,255,255,.12);}
+/* Operational stats */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.25rem;}
+.stat-card{background:var(--warm-white);border-radius:var(--radius);padding:1.1rem 1.25rem;border:1px solid var(--border);}
+.stat-number{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--purple);line-height:1;}
+.stat-label{font-size:.72rem;color:var(--ink-light);margin-top:.25rem;line-height:1.3;}
+.stat-sub{font-size:.68rem;color:var(--ink-light);margin-top:.1rem;}
+/* Dashboard grid */
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem;}
+.dash-card{background:var(--warm-white);border-radius:var(--radius);padding:1.25rem 1.5rem;border:1px solid var(--border);}
+.dash-card-title{font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.9rem;display:flex;align-items:center;justify-content:space-between;}
+.dash-card-link{font-size:.72rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--teal);cursor:pointer;}
+.dash-card-link:hover{text-decoration:underline;}
+/* Student activity rows */
+.activity-item{display:flex;align-items:center;gap:.85rem;padding:.7rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.activity-item:last-child{border-bottom:none;}
+.activity-item:hover{background:var(--lilac-light);margin:0 -.5rem;padding-left:.5rem;padding-right:.5rem;border-radius:6px;}
+.activity-avatar{width:34px;height:34px;border-radius:50%;background:var(--lilac-light);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.activity-name{font-weight:500;font-size:.85rem;color:var(--ink);}
+.activity-meta{font-size:.74rem;color:var(--ink-light);margin-top:.1rem;}
+.activity-progress{margin-left:auto;text-align:right;flex-shrink:0;}
+.activity-pct{font-weight:600;font-size:.85rem;color:var(--purple);}
+.activity-bar{height:3px;width:60px;background:var(--border);border-radius:2px;margin-top:.3rem;margin-left:auto;}
+.activity-bar-fill{height:100%;border-radius:2px;background:var(--purple);}
+/* Quick access */
+.quick-class-form{display:flex;gap:.5rem;margin-bottom:1rem;}
+.quick-class-input{flex:1;padding:.45rem .65rem;border:1px solid var(--border-mid);border-radius:var(--radius-sm);font-size:.82rem;background:var(--warm-white);color:var(--ink);outline:none;}
+.quick-class-input:focus{border-color:var(--purple);}
+.quick-class-btn{padding:.45rem .75rem;border:none;background:var(--purple);color:#fff;border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-weight:500;white-space:nowrap;transition:background .15s;}
+.quick-class-btn:hover{background:var(--purple-dark);}
+.quick-unit-row{display:flex;align-items:center;gap:.6rem;padding:.45rem 0;cursor:pointer;border-bottom:1px solid var(--border);transition:all .12s;}
+.quick-unit-row:last-of-type{border-bottom:none;}
+.quick-unit-row:hover{color:var(--purple);}
+.quick-unit-label{flex:1;font-size:.8rem;color:var(--ink-mid);}
+.quick-unit-sub{font-size:.7rem;color:var(--ink-light);}
+/* Roster */
 .roster-list{display:flex;flex-direction:column;gap:.75rem;}
 .roster-item{display:flex;align-items:center;gap:.9rem;padding:.75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--warm-white);cursor:pointer;transition:all .15s;}
-.roster-item:hover{border-color:var(--accent-light);background:var(--accent-light);}
-.roster-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.roster-item:hover{border-color:var(--purple-light);background:var(--lilac-light);}
+.roster-avatar{width:38px;height:38px;border-radius:50%;background:var(--lilac-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
 .roster-name{font-weight:500;font-size:.88rem;}
 .roster-meta{font-size:.75rem;color:var(--ink-light);margin-top:.1rem;}
 .roster-progress{margin-left:auto;text-align:right;}
@@ -94,14 +123,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .roster-pct-label{font-size:.7rem;color:var(--ink-light);}
 .progress-mini{height:4px;width:80px;background:var(--border);border-radius:2px;margin-top:.4rem;}
 .progress-mini-fill{height:100%;border-radius:2px;background:var(--purple);}
-
-/* ── UNIT GRID (dashboard) ── */
+/* unit mini - keep for sidebar compatibility */
 .units-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
 .unit-mini{padding:.9rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--warm-white);cursor:pointer;transition:all .15s;}
-.unit-mini:hover{border-color:var(--accent);background:var(--accent-light);}
+.unit-mini:hover{border-color:var(--purple);background:var(--purple-light);}
 .unit-mini-icon{font-size:1.1rem;margin-bottom:.3rem;}
 .unit-mini-title{font-size:.78rem;font-weight:500;color:var(--ink-mid);}
 .unit-mini-sub{font-size:.7rem;color:var(--ink-light);}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}.dash-stats{grid-template-columns:repeat(2,1fr);}}
 
 /* ── CLASS DETAIL ── */
 .class-detail{padding:1.5rem 2rem;}
@@ -1640,25 +1669,40 @@ z"/></symbol></svg>
       <!-- DASHBOARD -->
       <div id="v-dashboard" class="view active">
         <div class="dashboard">
+
+          <!-- Hero -->
           <div class="dash-hero">
-            <h1 id="dash-greeting">Good morning, <em>Teacher!</em></h1>
-            <p id="dash-hero-desc"></p>
+            <div class="dash-hero-text">
+              <h1 id="dash-greeting">Good morning, <em>Teacher!</em></h1>
+              <p id="dash-hero-desc"></p>
+            </div>
+            <div class="dash-hero-actions">
+              <button class="dash-hero-btn" onclick="showRoster()">View Roster</button>
+              <button class="dash-hero-btn" onclick="showTicketModal()">Support</button>
+            </div>
           </div>
-          <div class="dash-stats">
-            <div class="stat-card"><div class="stat-number">72</div><div class="stat-label">Total Classes</div></div>
-            <div class="stat-card"><div class="stat-number">9</div><div class="stat-label">Units</div></div>
-            <div class="stat-card"><div class="stat-number" id="stat-done">0</div><div class="stat-label">Classes Completed</div></div>
-            <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Active Students</div></div>
-          </div>
+
+          <!-- Operational stats — filled by renderDashboard() -->
+          <div class="dash-stats" id="dash-stats-row"></div>
+
+          <!-- Two-column operational grid -->
           <div class="dash-grid">
+
+            <!-- Left: Student activity -->
             <div class="dash-card">
-              <div class="dash-card-title">📚 Units Overview</div>
-              <div class="units-grid" id="dash-units-grid"></div>
+              <div class="dash-card-title">
+                Student Activity
+                <span class="dash-card-link" onclick="showRoster()">View all →</span>
+              </div>
+              <div id="dash-activity"></div>
             </div>
+
+            <!-- Right: Quick class access -->
             <div class="dash-card">
-              <div class="dash-card-title">👥 Student Roster</div>
-              <div class="roster-list" id="dash-roster"></div>
+              <div class="dash-card-title">Quick Access</div>
+              <div id="dash-quick-access"></div>
             </div>
+
           </div>
         </div>
       </div>
@@ -2745,69 +2789,102 @@ function showRoster() {
 // DASHBOARD
 // ══════════════════════════════════════════════════════════════
 function renderDashboard() {
-  // Dynamic greeting
+  // ── Greeting ──────────────────────────────────────────────
   var greetEl = document.getElementById('dash-greeting');
   var descEl  = document.getElementById('dash-hero-desc');
   if (greetEl && window.CURRENT_USER) {
     var hour = new Date().getHours();
-    var tod = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-    var firstName = window.CURRENT_USER.name.split(' ')[0];
-    greetEl.innerHTML = tod + ', <em>' + firstName + '!</em>';
+    var tod  = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    greetEl.innerHTML = tod + ', <em>' + window.CURRENT_USER.name.split(' ')[0] + '!</em>';
   }
-  // Hero description — show product › level context
   if (descEl) {
-    var userRecord = window.CURRENT_USER
+    var userRec  = window.CURRENT_USER
       ? (getUsers().find(function(u){ return u.id === window.CURRENT_USER.id; }) || window.CURRENT_USER)
       : null;
-    var userProducts = (userRecord && userRecord.products && userRecord.products.length)
-      ? userRecord.products : Object.keys(PRODUCT_CLASSES);
-    var ctxParts = [];
-    userProducts.forEach(function(pid) {
+    var uProds   = (userRec && userRec.products && userRec.products.length)
+      ? userRec.products : Object.keys(PRODUCT_CLASSES);
+    var prodLabel = uProds.map(function(pid){
       var pm = PRODUCTS_META.find(function(p){ return p.id === pid; });
-      if (!pm) return;
-      var lvNames = LEVELS_META.filter(function(l){ return l.product === pid && l.active; })
-                               .map(function(l){ return l.name + ' ' + l.title; }).join(', ');
-      ctxParts.push(pm.name + (lvNames ? ' · ' + lvNames : ''));
-    });
-    var heroCls    = teacherAllowedClasses();
-    var unitCount  = UNITS_META.filter(function(u){ return u.classes.some(function(cn){ return heroCls.indexOf(cn) >= 0; }); }).length;
-    descEl.textContent = (ctxParts.length ? ctxParts.join(' · ') + ' · ' : '') + unitCount + ' units · ' + heroCls.length + ' classes';
+      var lv = pm ? LEVELS_META.find(function(l){ return l.product === pid && l.active; }) : null;
+      return (pm ? pm.name : pid) + (lv ? ' · ' + lv.name + ' ' + lv.title : '');
+    }).join(', ');
+    descEl.textContent = prodLabel;
   }
-  document.getElementById('stat-done').textContent = COMPLETIONS.size;
-  // Units grid — filtered by teacher's allowed classes
-  const allowedCls = teacherAllowedClasses();
-  let ug = '';
-  UNITS_META.forEach(u => {
-    const unitClasses = u.classes.filter(cn => allowedCls.indexOf(cn) >= 0);
-    if (!unitClasses.length) return;
-    const done = unitClasses.filter(c => COMPLETIONS.has(c)).length;
-    ug += `<div class="unit-mini" onclick="openUnit('${u.id}')">
-      <div class="unit-mini-icon">${u.icon}</div>
-      <div class="unit-mini-title">${u.title}</div>
-      <div class="unit-mini-sub">${done}/${unitClasses.length} classes</div>
-    </div>`;
-  });
-  document.getElementById('dash-units-grid').innerHTML = ug;
-  // Roster preview — filtered by teacher's assigned students
-  const visibleStudents = teacherAllowedStudents();
-  let rl = '';
-  visibleStudents.forEach(s => {
-    const pct = Math.round(s.progress.done.length / 72 * 100);
-    rl += `<div class="roster-item" onclick="openProfile('${s.id}')">
-      <div class="roster-avatar">${s.avatar}</div>
-      <div>
-        <div class="roster-name">${s.name}</div>
-        <div class="roster-meta">Last: Class ${s.lastClass} · ${CLASS_META[s.lastClass]?.name||''}</div>
-      </div>
-      <div class="roster-progress">
-        <div class="roster-pct">${pct}%</div>
-        <div class="roster-pct-label">complete</div>
-        <div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
-      </div>
-    </div>`;
-  });
-  document.getElementById('dash-roster').innerHTML = rl ||
-    '<p style="font-size:.84rem;color:var(--ink-light);padding:.5rem 0;">No students assigned yet.</p>';
+
+  // ── Operational stats ─────────────────────────────────────
+  var students   = teacherAllowedStudents();
+  var heroCls    = teacherAllowedClasses();
+  var totalDone  = students.reduce(function(s, st){ return s + st.progress.done.length; }, 0);
+  var avgPct     = students.length ? Math.round(totalDone / students.length / 72 * 100) : 0;
+  var statsEl    = document.getElementById('dash-stats-row');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-number">' + students.length + '</div><div class="stat-label">Students</div></div>' +
+      '<div class="stat-card"><div class="stat-number">' + avgPct + '%</div><div class="stat-label">Avg. Progress</div></div>' +
+      '<div class="stat-card"><div class="stat-number">' + COMPLETIONS.size + '</div><div class="stat-label">Reviewed by You</div></div>' +
+      '<div class="stat-card"><div class="stat-number">' + heroCls.length + '</div><div class="stat-label">Classes in Curriculum</div></div>';
+  }
+
+  // ── Student activity feed ─────────────────────────────────
+  var actEl = document.getElementById('dash-activity');
+  if (actEl) {
+    if (!students.length) {
+      actEl.innerHTML = '<p style="font-size:.83rem;color:var(--ink-light);padding:.5rem 0;">No students assigned yet.</p>';
+    } else {
+      var sorted = students.slice().sort(function(a,b){ return b.lastClass - a.lastClass; });
+      actEl.innerHTML = sorted.map(function(s) {
+        var pct      = Math.round(s.progress.done.length / 72 * 100);
+        var lastUnit = UNITS_META.find(function(u){ return u.classes.indexOf(s.lastClass) >= 0; });
+        var lastCls  = CLASS_META[s.lastClass];
+        return '<div class="activity-item" onclick="openProfile(\'' + s.id + '\')">' +
+          '<div class="activity-avatar">' + s.avatar + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="activity-name">' + s.name + '</div>' +
+            '<div class="activity-meta">' + (lastUnit ? lastUnit.icon + ' ' + lastUnit.title : '') + '</div>' +
+            '<div class="activity-meta">Last: Class ' + s.lastClass + ' — ' + (lastCls ? lastCls.name : '') + '</div>' +
+          '</div>' +
+          '<div class="activity-progress">' +
+            '<div class="activity-pct">' + pct + '%</div>' +
+            '<div class="activity-bar"><div class="activity-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  // ── Quick class access ────────────────────────────────────
+  var quickEl = document.getElementById('dash-quick-access');
+  if (quickEl) {
+    var allowed   = teacherAllowedClasses();
+    var unitRows  = UNITS_META
+      .filter(function(u){ return u.classes.some(function(cn){ return allowed.indexOf(cn) >= 0; }); })
+      .slice(0, 4)
+      .map(function(u) {
+        var uc   = u.classes.filter(function(cn){ return allowed.indexOf(cn) >= 0; });
+        var done = uc.filter(function(cn){ return COMPLETIONS.has(cn); }).length;
+        return '<div class="quick-unit-row" onclick="openUnit(\'' + u.id + '\')">' +
+          '<span style="font-size:.9rem;flex-shrink:0;">' + u.icon + '</span>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="quick-unit-label">' + u.title + '</div>' +
+            '<div class="quick-unit-sub">' + done + '/' + uc.length + ' reviewed</div>' +
+          '</div>' +
+          '<span style="color:var(--teal);font-size:.85rem;">›</span>' +
+        '</div>';
+      }).join('');
+
+    quickEl.innerHTML =
+      '<div class="quick-class-form">' +
+        '<input type="number" id="quick-class-input" class="quick-class-input" min="1" max="72" placeholder="Class #" ' +
+          'onkeypress="if(event.key===\'Enter\'){var v=parseInt(this.value);if(v>=1&&v<=72)openClass(v);}">' +
+        '<button class="quick-class-btn" onclick="var v=parseInt(document.getElementById(\'quick-class-input\').value);if(v>=1&&v<=72)openClass(v);">Open</button>' +
+      '</div>' +
+      '<div style="font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.4rem;">Units</div>' +
+      unitRows +
+      '<button onclick="toggleSidebarUnit(\'u1\')" ' +
+        'style="margin-top:.75rem;width:100%;padding:.4rem;border:1px solid var(--border);background:none;border-radius:var(--radius-sm);cursor:pointer;font-size:.75rem;color:var(--ink-mid);">' +
+        'Browse curriculum in sidebar →' +
+      '</button>';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3375,7 +3452,8 @@ function markComplete(cn) {
   localStorage.setItem('su_done', JSON.stringify([...COMPLETIONS]));
   openClass(cn);
   buildSidebar();
-  document.getElementById('stat-done').textContent = COMPLETIONS.size;
+  // Refresh stats if dashboard is visible
+  if (document.getElementById('dash-stats-row')) renderDashboard();
 }
 
 // ══════════════════════════════════════════════════════════════
