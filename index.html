@@ -346,8 +346,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .s-hub-resume-main{font-size:.9rem;font-weight:500;line-height:1.3;}
 .s-hub-resume-sub{font-size:.75rem;opacity:.75;margin-top:.15rem;}
 /* Card grid — all sections side by side */
-.s-hub-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-bottom:1.25rem;}
-@media(max-width:680px){.s-hub-cards{grid-template-columns:1fr;}}
+.s-hub-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.25rem;}
+/* Clickable nav cards */
+.s-hub-nav-card{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s;}
+.s-hub-nav-card:hover{border-color:var(--purple);box-shadow:var(--shadow);transform:translateY(-2px);}
+.s-hub-card-icon{font-size:1.5rem;margin-bottom:.55rem;}
+.s-hub-card-stat{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--purple);line-height:1;margin:.25rem 0 .3rem;}
+.s-hub-card-desc{font-size:.78rem;color:var(--ink-light);line-height:1.4;}
+.s-hub-card-cta{font-size:.73rem;color:var(--purple);font-weight:500;margin-top:.9rem;}
+@media(max-width:780px){.s-hub-cards{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.s-hub-cards{grid-template-columns:1fr;}}
 .s-hub-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;}
 /* Course items */
 .s-hub-course-item{display:flex;align-items:center;gap:.85rem;padding:.65rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .12s;}
@@ -3649,15 +3657,20 @@ function renderStudentPortal() {
       : null;
     idEl.textContent = (userRecord && userRecord.studentId) ? 'Student ID: ' + userRecord.studentId : '';
   }
-  // The hub (products mode) has its own hero — hide the static header strip to avoid duplication
+  // Hub and all detail pages have their own headers — hide the static strip for all of them
+  var hubModes = ['products','courselist','schedule','notices','progress'];
   var staticHdr = document.querySelector('.student-portal-header');
-  if (staticHdr) staticHdr.style.display = (currentStudentMode === 'products') ? 'none' : '';
+  if (staticHdr) staticHdr.style.display = hubModes.indexOf(currentStudentMode) >= 0 ? 'none' : '';
 
-  if      (currentStudentMode === 'products') renderStudentProducts();
-  else if (currentStudentMode === 'levels')   renderStudentLevels();
-  else if (currentStudentMode === 'units')    renderStudentUnits();
-  else if (currentStudentMode === 'classes')  renderStudentClasses();
-  else if (currentStudentMode === 'class')    renderStudentClass();
+  if      (currentStudentMode === 'products')   renderStudentProducts();
+  else if (currentStudentMode === 'courselist') renderStudentCourses();
+  else if (currentStudentMode === 'schedule')   renderStudentSchedule();
+  else if (currentStudentMode === 'notices')    renderStudentNotices();
+  else if (currentStudentMode === 'progress')   renderStudentProgress();
+  else if (currentStudentMode === 'levels')     renderStudentLevels();
+  else if (currentStudentMode === 'units')      renderStudentUnits();
+  else if (currentStudentMode === 'classes')    renderStudentClasses();
+  else if (currentStudentMode === 'class')      renderStudentClass();
   else renderStudentProducts();
 }
 
@@ -3757,9 +3770,7 @@ function teacherAllowedStudents() {
 
 // ── PRODUCT → LEVEL → UNIT → CLASS NAVIGATION ──────────────
 
-// ── Student Learning Hub ─────────────────────────────────────
-// Called when currentStudentMode === 'products' (home state).
-// Replaces the bare product-card list with a full learning hub.
+// ── Student Learning Hub (minimalist home) ───────────────────
 function renderStudentProducts() {
   currentStudentMode = 'products';
   currentStudentProduct = null;
@@ -3800,139 +3811,75 @@ function renderStudentProducts() {
       '</button>'
     : '<div class="s-hub-empty">No recent lesson yet — choose a course below to start.</div>';
 
-  // ── My Courses ────────────────────────────────────────────
-  var coursesHtml = '';
-  if (!allowedPids.length) {
-    coursesHtml = '<div class="s-hub-empty">No courses assigned yet. Please contact your teacher.</div>';
-  } else {
-    PRODUCTS_META.filter(function(p){ return allowedPids.indexOf(p.id) >= 0 && p.active; })
-      .forEach(function(p) {
-        var lvIds    = studentAllowedLevels(p.id);
-        var lvs      = LEVELS_META.filter(function(l){ return l.product===p.id && l.active && lvIds.indexOf(l.id)>=0; });
-        var totCls = 0, doneCls2 = 0;
-        lvs.forEach(function(lv) {
-          (lv.units||[]).forEach(function(uid) {
-            var u = UNITS_META.find(function(x){ return x.id===uid; });
-            if (!u) return;
-            u.classes.filter(classAllowedForStudent).forEach(function(cn) {
-              totCls++;
-              if (COMPLETIONS.has(cn)) doneCls2++;
-            });
-          });
-        });
-        var cPct     = totCls ? Math.round(doneCls2/totCls*100) : 0;
-        var lvLabel  = lvs.length ? lvs.map(function(l){ return l.name+' '+l.title; }).join(' · ') : 'All levels';
-        coursesHtml +=
-          '<div class="s-hub-course-item" onclick="studentOpenProduct(\'' + p.id + '\')">' +
-            '<div class="s-hub-course-icon">' + p.icon + '</div>' +
-            '<div style="flex:1;min-width:0;">' +
-              '<div class="s-hub-course-name">' + p.name + '</div>' +
-              '<div class="s-hub-course-sub">' + lvLabel + '</div>' +
-            '</div>' +
-            '<div class="s-hub-course-pct">' + cPct + '%</div>' +
-          '</div>';
-      });
-  }
-
-  // ── Upcoming Classes ──────────────────────────────────────
-  // Lightweight placeholder — next suggested class based on progress
+  // ── Upcoming: next class ──────────────────────────────────
   var nextCn   = (lastCn && lastCn < 72) ? lastCn + 1 : (!lastCn ? 1 : null);
   var nextMeta = nextCn ? CLASS_META[nextCn] : null;
-  var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
-  var upcomingHtml = '';
-  if (nextCn) {
-    upcomingHtml +=
-      '<div class="s-hub-upcoming-item">' +
-        '<div class="s-hub-upcoming-dot"></div>' +
-        '<div>' +
-          '<div class="s-hub-upcoming-title">Class ' + nextCn + (nextMeta ? ': ' + nextMeta.name : '') + '</div>' +
-          '<div class="s-hub-upcoming-meta">' + (nextUnit ? nextUnit.icon + ' ' + nextUnit.title : '') + ' · Up next</div>' +
-        '</div>' +
-      '</div>';
-  }
-  upcomingHtml +=
-    '<div class="s-hub-upcoming-item">' +
-      '<div class="s-hub-upcoming-dot" style="background:var(--border-mid);"></div>' +
-      '<div>' +
-        '<div class="s-hub-upcoming-title" style="color:var(--ink-light);">Live schedule coming soon</div>' +
-        '<div class="s-hub-upcoming-meta">Your teacher will publish session times here</div>' +
-      '</div>' +
-    '</div>';
 
-  // ── Notice Board ──────────────────────────────────────────
-  var noticeHtml =
-    '<div class="s-hub-notice-item">' +
-      '<div class="s-hub-notice-tag">Welcome</div>' +
-      '<div class="s-hub-notice-text">Welcome to Wonder Talks! Announcements, reminders, and class news from your teacher will appear here.</div>' +
-    '</div>';
+  // ── Avg score ─────────────────────────────────────────────
+  var attempts  = stu.attempts || [];
+  var avgScore  = attempts.length
+    ? Math.round(attempts.reduce(function(s,a){ return s+a.score; },0) / attempts.length) : 0;
 
-  // ── My Progress stats ─────────────────────────────────────
-  var recentAttempts = (stu.attempts || []).slice(0, 5);
-  var avgScore = recentAttempts.length
-    ? Math.round(recentAttempts.reduce(function(s, a){ return s+a.score; }, 0) / recentAttempts.length)
-    : 0;
-  var activityHtml = recentAttempts.length
-    ? recentAttempts.map(function(a) {
-        var sc = a.score >= 85 ? 'var(--green)' : a.score >= 70 ? '#7C3AED' : 'var(--ink-light)';
-        return '<div class="s-hub-act-item">' +
-          '<div class="s-hub-act-cls">' + a.class + '</div>' +
-          '<div style="flex:1;min-width:0;">' +
-            '<div class="s-hub-act-name">' + a.name + '</div>' +
-            '<div class="s-hub-act-meta">' + a.date + '</div>' +
-          '</div>' +
-          '<div class="s-hub-act-score" style="color:' + sc + ';">' + a.score + '%</div>' +
-        '</div>';
-      }).join('')
-    : '<div class="s-hub-empty">No activity yet — complete your first class to see results here.</div>';
+  // ── Build each card (minimal) ─────────────────────────────
+  var continueOnclick = lastCn ? 'studentGoToClass('+lastCn+')' : 'renderStudentCourses()';
+  var continueCard =
+    '<div class="s-hub-card-icon">▶</div>' +
+    '<div class="s-hub-label">Continue Learning</div>' +
+    (lastCn
+      ? '<div class="s-hub-card-stat">Class ' + lastCn + '</div>' +
+        '<div class="s-hub-card-desc">' + (lastMeta?lastMeta.name:'Class '+lastCn) + (lastUnit?' · '+lastUnit.icon+' '+lastUnit.title:'') + '</div>'
+      : '<div class="s-hub-card-stat" style="font-size:1rem;color:var(--ink-light);">Not started</div>' +
+        '<div class="s-hub-card-desc">Open a course to begin</div>') +
+    '<div class="s-hub-card-cta">Resume →</div>';
 
-  // ── Assemble hub ──────────────────────────────────────────
+  var coursesCard =
+    '<div class="s-hub-card-icon">' + (primaryProduct?primaryProduct.icon:'📚') + '</div>' +
+    '<div class="s-hub-label">My Courses</div>' +
+    '<div class="s-hub-card-stat">' + allowedPids.length + (allowedPids.length===1?' course':' courses') + '</div>' +
+    '<div class="s-hub-card-desc">' + pct + '% complete · ' + doneCount + ' classes done</div>' +
+    '<div class="s-hub-card-cta">View →</div>';
+
+  var upcomingCard =
+    '<div class="s-hub-card-icon">📅</div>' +
+    '<div class="s-hub-label">Upcoming Classes</div>' +
+    (nextCn
+      ? '<div class="s-hub-card-stat">Class ' + nextCn + '</div>' +
+        '<div class="s-hub-card-desc">' + (nextMeta?nextMeta.name:'Class '+nextCn) + ' · Up next</div>'
+      : '<div class="s-hub-card-stat" style="font-size:1rem;color:var(--ink-light);">Up to date</div>' +
+        '<div class="s-hub-card-desc">All classes reviewed</div>') +
+    '<div class="s-hub-card-cta">View schedule →</div>';
+
+  var noticeCard =
+    '<div class="s-hub-card-icon">📋</div>' +
+    '<div class="s-hub-label">Notice Board</div>' +
+    '<div class="s-hub-card-stat">1 notice</div>' +
+    '<div class="s-hub-card-desc">Welcome to Wonder Talks</div>' +
+    '<div class="s-hub-card-cta">View all →</div>';
+
+  var progressCard =
+    '<div class="s-hub-card-icon">📊</div>' +
+    '<div class="s-hub-label">My Progress</div>' +
+    '<div class="s-hub-card-stat">' + pct + '%</div>' +
+    '<div class="s-hub-card-desc">' + doneCount + ' of ' + totalClasses + ' classes' + (avgScore?' · Avg '+avgScore+'%':'') + '</div>' +
+    '<div class="s-hub-card-cta">View details →</div>';
+
+  // ── Assemble (hero + 5 cards, nothing else) ───────────────
   container.innerHTML =
     '<div class="s-hub">' +
-
-      // Hero
       '<div class="s-hub-hero">' +
-        '<div>' +
-          '<div class="s-hub-greet">' + tod + ', <em>' + firstName + '!</em></div>' +
-          '<div class="s-hub-tagline">' + (primaryProduct ? primaryProduct.name + ' · ' : '') + 'Every class brings you closer to real fluency.</div>' +
-        '</div>' +
+        '<div><div class="s-hub-greet">' + tod + ', <em>' + firstName + '!</em></div></div>' +
         '<div class="s-hub-prog-wrap">' +
-          '<div class="s-hub-prog-meta"><span>' + pct + '% complete</span><span>' + doneCount + ' / ' + totalClasses + ' classes</span></div>' +
+          '<div class="s-hub-prog-meta"><span>' + pct + '% complete</span><span>' + doneCount + ' / ' + totalClasses + '</span></div>' +
           '<div class="s-hub-prog-bar"><div class="s-hub-prog-fill" style="width:' + pct + '%;"></div></div>' +
         '</div>' +
       '</div>' +
-
-      // Cards — all side by side in a 2×2 grid
       '<div class="s-hub-cards">' +
-        '<div class="s-hub-card">' +
-          '<div class="s-hub-label">Continue Learning</div>' +
-          continueHtml +
-        '</div>' +
-        '<div class="s-hub-card">' +
-          '<div class="s-hub-label">My Courses</div>' +
-          coursesHtml +
-        '</div>' +
-        '<div class="s-hub-card">' +
-          '<div class="s-hub-label">Upcoming Classes</div>' +
-          upcomingHtml +
-        '</div>' +
-        '<div class="s-hub-card">' +
-          '<div class="s-hub-label">Notice Board</div>' +
-          noticeHtml +
-        '</div>' +
+        '<div class="s-hub-card s-hub-nav-card" onclick="' + continueOnclick + '">' + continueCard + '</div>' +
+        '<div class="s-hub-card s-hub-nav-card" onclick="renderStudentCourses()">' + coursesCard + '</div>' +
+        '<div class="s-hub-card s-hub-nav-card" onclick="renderStudentSchedule()">' + upcomingCard + '</div>' +
+        '<div class="s-hub-card s-hub-nav-card" onclick="renderStudentNotices()">' + noticeCard + '</div>' +
+        '<div class="s-hub-card s-hub-nav-card" onclick="renderStudentProgress()">' + progressCard + '</div>' +
       '</div>' +
-
-      // Progress
-      '<div class="s-hub-progress-section">' +
-        '<div class="s-hub-label" style="margin-bottom:.9rem;">My Progress</div>' +
-        '<div class="s-hub-stats-row">' +
-          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + doneCount + '</div><div class="s-hub-stat-label">Classes Complete</div></div>' +
-          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + pct + '%</div><div class="s-hub-stat-label">Overall Progress</div></div>' +
-          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + (avgScore||'—') + (avgScore?'%':'') + '</div><div class="s-hub-stat-label">Avg. Score</div></div>' +
-        '</div>' +
-        '<div class="s-hub-label">Recent Activity</div>' +
-        activityHtml +
-      '</div>' +
-
     '</div>';
 }
 
@@ -3954,6 +3901,171 @@ function studentGoToClass(cn) {
   currentStudentStage = 'vocab';
   saveNav();
   renderStudentClass();
+}
+
+// ── My Courses detail (product listing) ──────────────────────
+function renderStudentCourses() {
+  var pids = studentAllowedProducts();
+  if (pids.length === 1) { studentOpenProduct(pids[0]); return; }
+  currentStudentMode = 'courselist';
+  saveNav();
+  var html = '<div style="padding:1.75rem 2rem;max-width:860px;">' +
+    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+      '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
+      '<span class="hier-sep">›</span><span class="hier-current">My Courses</span>' +
+    '</div>' +
+    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Courses</div>';
+  if (!pids.length) {
+    html += '<div class="s-hub-empty">No courses assigned yet. Please contact your teacher.</div>';
+  } else {
+    PRODUCTS_META.filter(function(p){ return pids.indexOf(p.id)>=0 && p.active; }).forEach(function(p) {
+      var lvIds = studentAllowedLevels(p.id);
+      var lvs   = LEVELS_META.filter(function(l){ return l.product===p.id && l.active && lvIds.indexOf(l.id)>=0; });
+      var tot = 0, done = 0;
+      lvs.forEach(function(lv){ (lv.units||[]).forEach(function(uid){
+        var u = UNITS_META.find(function(x){ return x.id===uid; }); if(!u) return;
+        u.classes.filter(classAllowedForStudent).forEach(function(cn){ tot++; if(COMPLETIONS.has(cn)) done++; });
+      }); });
+      var cPct = tot ? Math.round(done/tot*100) : 0;
+      html += '<div class="student-product-card" onclick="studentOpenProduct(\''+p.id+'\')">' +
+        '<div class="sp-icon">'+p.icon+'</div>' +
+        '<div style="flex:1;"><div class="sp-name">'+p.name+'</div>' +
+        '<span class="sp-tag">'+p.tagline+'</span>' +
+        '<div class="sp-desc">'+p.desc+'</div>' +
+        '<div style="margin-top:.6rem;font-size:.76rem;color:var(--purple);font-weight:500;">'+cPct+'% complete · '+done+'/'+tot+' classes</div></div>' +
+        '<div class="sp-arrow">›</div></div>';
+    });
+  }
+  html += '</div>';
+  document.getElementById('student-view-content').innerHTML = html;
+}
+
+// ── Upcoming Classes detail ───────────────────────────────────
+function renderStudentSchedule() {
+  currentStudentMode = 'schedule';
+  saveNav();
+  var stu    = currentStudent;
+  var lastCn = stu.lastClass;
+  var nextCn = (lastCn && lastCn < 72) ? lastCn + 1 : (!lastCn ? 1 : null);
+  var nextMeta = nextCn ? CLASS_META[nextCn] : null;
+  var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
+  var html =
+    '<div style="padding:1.75rem 2rem;max-width:680px;">' +
+    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+      '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
+      '<span class="hier-sep">›</span><span class="hier-current">Upcoming Classes</span>' +
+    '</div>' +
+    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Upcoming Classes</div>';
+  if (nextCn) {
+    html +=
+      '<div class="s-hub-card" style="margin-bottom:1rem;cursor:pointer;" onclick="studentGoToClass('+nextCn+')">' +
+        '<div style="display:flex;align-items:center;gap:1rem;">' +
+          '<div style="width:44px;height:44px;border-radius:10px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">'+(nextUnit?nextUnit.icon:'📖')+'</div>' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:500;font-size:.9rem;">Class '+nextCn+(nextMeta?': '+nextMeta.name:'')+'</div>' +
+            '<div style="font-size:.76rem;color:var(--ink-light);margin-top:.15rem;">'+(nextUnit?nextUnit.title:'')+'</div>' +
+          '</div>' +
+          '<span style="color:var(--purple);">Open →</span>' +
+        '</div>' +
+      '</div>';
+  }
+  html +=
+    '<div class="s-hub-card" style="text-align:center;padding:2rem;">' +
+      '<div style="font-size:1.5rem;margin-bottom:.65rem;">📅</div>' +
+      '<div style="font-size:.88rem;font-weight:500;color:var(--ink);margin-bottom:.3rem;">Live schedule coming soon</div>' +
+      '<div style="font-size:.78rem;color:var(--ink-light);">Your teacher will publish upcoming session times and group assignments here.</div>' +
+    '</div>' +
+    '</div>';
+  document.getElementById('student-view-content').innerHTML = html;
+}
+
+// ── Notice Board detail ───────────────────────────────────────
+function renderStudentNotices() {
+  currentStudentMode = 'notices';
+  saveNav();
+  document.getElementById('student-view-content').innerHTML =
+    '<div style="padding:1.75rem 2rem;max-width:680px;">' +
+    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+      '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
+      '<span class="hier-sep">›</span><span class="hier-current">Notice Board</span>' +
+    '</div>' +
+    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Notice Board</div>' +
+    '<div class="s-hub-notice-item" style="margin-bottom:.75rem;">' +
+      '<div class="s-hub-notice-tag">Welcome</div>' +
+      '<div class="s-hub-notice-text">Welcome to Wonder Talks! This is where your teacher will share announcements, reminders, and important class information. Check back regularly.</div>' +
+    '</div>' +
+    '<div class="s-hub-card" style="text-align:center;padding:2rem;margin-top:1rem;">' +
+      '<div style="font-size:1.5rem;margin-bottom:.65rem;">📋</div>' +
+      '<div style="font-size:.88rem;font-weight:500;color:var(--ink);margin-bottom:.3rem;">No new announcements</div>' +
+      '<div style="font-size:.78rem;color:var(--ink-light);">Your teacher hasn\'t posted anything else yet.</div>' +
+    '</div>' +
+    '</div>';
+}
+
+// ── My Progress detail ────────────────────────────────────────
+function renderStudentProgress() {
+  currentStudentMode = 'progress';
+  saveNav();
+  var stu = currentStudent;
+  var pids = studentAllowedProducts();
+  var totalClasses = pids.reduce(function(s,pid){ return s+(PRODUCT_CLASSES[pid]||[]).filter(classAllowedForStudent).length; }, 0);
+  var doneCount = COMPLETIONS.size;
+  var pct = totalClasses ? Math.round(doneCount/totalClasses*100) : 0;
+  var attempts = stu.attempts || [];
+  var avgScore = attempts.length ? Math.round(attempts.reduce(function(s,a){ return s+a.score; },0)/attempts.length) : 0;
+
+  var actHtml = attempts.length
+    ? attempts.map(function(a) {
+        var sc = a.score>=85?'var(--green)':a.score>=70?'var(--purple)':'var(--ink-light)';
+        return '<div class="s-hub-act-item">' +
+          '<div class="s-hub-act-cls">'+a.class+'</div>' +
+          '<div style="flex:1;min-width:0;"><div class="s-hub-act-name">'+a.name+'</div><div class="s-hub-act-meta">'+a.date+'</div></div>' +
+          '<div class="s-hub-act-score" style="color:'+sc+';">'+a.score+'%</div>' +
+        '</div>';
+      }).join('')
+    : '<div class="s-hub-empty">No activity recorded yet.</div>';
+
+  var cats = Object.entries(stu.catScores || {});
+  var catHtml = cats.map(function(entry) {
+    var cat = entry[0], score = entry[1];
+    return '<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.55rem;">' +
+      '<div style="width:100px;font-size:.78rem;color:var(--ink-mid);flex-shrink:0;text-transform:capitalize;">'+cat+'</div>' +
+      '<div style="flex:1;height:5px;background:var(--border);border-radius:3px;">' +
+        '<div style="height:100%;width:'+score+'%;background:var(--purple);border-radius:3px;"></div>' +
+      '</div>' +
+      '<div style="font-size:.78rem;font-weight:500;color:var(--purple);width:34px;text-align:right;">'+score+'%</div>' +
+    '</div>';
+  }).join('');
+
+  var completedHtml = Array.from(COMPLETIONS).slice(0,24).map(function(cn) {
+    var m = CLASS_META[cn]; var u = UNITS_META.find(function(u){ return u.classes.indexOf(cn)>=0; });
+    return '<div style="display:flex;align-items:center;gap:.65rem;padding:.45rem 0;border-bottom:1px solid var(--border);">' +
+      '<div style="width:26px;height:26px;border-radius:6px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;color:var(--purple);flex-shrink:0;">'+cn+'</div>' +
+      '<div style="flex:1;font-size:.82rem;color:var(--ink);">'+(m?m.name:'Class '+cn)+'</div>' +
+      '<div style="font-size:.7rem;color:var(--ink-light);">'+(u?u.icon:'')+'</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('student-view-content').innerHTML =
+    '<div style="padding:1.75rem 2rem;max-width:860px;">' +
+    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+      '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
+      '<span class="hier-sep">›</span><span class="hier-current">My Progress</span>' +
+    '</div>' +
+    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Progress</div>' +
+    '<div class="s-hub-stats-row" style="margin-bottom:1.5rem;">' +
+      '<div class="s-hub-stat"><div class="s-hub-stat-num">'+doneCount+'</div><div class="s-hub-stat-label">Classes Complete</div></div>' +
+      '<div class="s-hub-stat"><div class="s-hub-stat-num">'+pct+'%</div><div class="s-hub-stat-label">Overall Progress</div></div>' +
+      '<div class="s-hub-stat"><div class="s-hub-stat-num">'+(avgScore||'—')+(avgScore?'%':'')+'</div><div class="s-hub-stat-label">Avg. Score</div></div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;">' +
+      '<div class="s-hub-card"><div class="s-hub-label" style="margin-bottom:.85rem;">Recent Activity</div>'+actHtml+'</div>' +
+      '<div style="display:flex;flex-direction:column;gap:1.25rem;">' +
+        (catHtml?'<div class="s-hub-card"><div class="s-hub-label" style="margin-bottom:.85rem;">Skills Breakdown</div>'+catHtml+'</div>':'') +
+        (completedHtml?'<div class="s-hub-card"><div class="s-hub-label" style="margin-bottom:.75rem;">Completed Classes</div>'+completedHtml+'</div>':'') +
+      '</div>' +
+    '</div>' +
+    '</div>';
 }
 
 function studentOpenProduct(pid) {
