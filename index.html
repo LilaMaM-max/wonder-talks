@@ -72,7 +72,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .dashboard{padding:2rem;}
 .dash-hero{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:var(--cream);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;}
 .dash-hero h1{font-family:'DM Serif Display',serif;font-size:1.8rem;margin-bottom:.35rem;}
-.dash-hero h1 em{color:var(--accent);font-style:italic;}
+.dash-hero h1 em{color:var(--lilac);font-style:italic;}
 .dash-hero p{font-size:.9rem;color:rgba(245,240,232,.75);}
 .dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
 .stat-card{background:var(--cream);border-radius:var(--radius);padding:1.25rem 1.5rem;border:1px solid var(--border);}
@@ -1642,7 +1642,7 @@ z"/></symbol></svg>
         <div class="dashboard">
           <div class="dash-hero">
             <h1 id="dash-greeting">Good morning, <em>Teacher!</em></h1>
-            <p id="dash-hero-desc">9 units · 72 classes · foundational English for real-world communication.</p>
+            <p id="dash-hero-desc"></p>
           </div>
           <div class="dash-stats">
             <div class="stat-card"><div class="stat-number">72</div><div class="stat-label">Total Classes</div></div>
@@ -2747,11 +2747,31 @@ function showRoster() {
 function renderDashboard() {
   // Dynamic greeting
   var greetEl = document.getElementById('dash-greeting');
+  var descEl  = document.getElementById('dash-hero-desc');
   if (greetEl && window.CURRENT_USER) {
     var hour = new Date().getHours();
     var tod = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     var firstName = window.CURRENT_USER.name.split(' ')[0];
     greetEl.innerHTML = tod + ', <em>' + firstName + '!</em>';
+  }
+  // Hero description — show product › level context
+  if (descEl) {
+    var userRecord = window.CURRENT_USER
+      ? (getUsers().find(function(u){ return u.id === window.CURRENT_USER.id; }) || window.CURRENT_USER)
+      : null;
+    var userProducts = (userRecord && userRecord.products && userRecord.products.length)
+      ? userRecord.products : Object.keys(PRODUCT_CLASSES);
+    var ctxParts = [];
+    userProducts.forEach(function(pid) {
+      var pm = PRODUCTS_META.find(function(p){ return p.id === pid; });
+      if (!pm) return;
+      var lvNames = LEVELS_META.filter(function(l){ return l.product === pid && l.active; })
+                               .map(function(l){ return l.name + ' ' + l.title; }).join(', ');
+      ctxParts.push(pm.name + (lvNames ? ' · ' + lvNames : ''));
+    });
+    var allowedCls = teacherAllowedClasses();
+    var unitCount  = UNITS_META.filter(function(u){ return u.classes.some(function(cn){ return allowedCls.indexOf(cn) >= 0; }); }).length;
+    descEl.textContent = (ctxParts.length ? ctxParts.join(' · ') + ' · ' : '') + unitCount + ' units · ' + allowedCls.length + ' classes';
   }
   document.getElementById('stat-done').textContent = COMPLETIONS.size;
   // Units grid — filtered by teacher's allowed classes
@@ -2933,13 +2953,26 @@ function renderClassDetail(cn) {
         </button>`).join('')}
     </div>`;
 
+  // Build hierarchy breadcrumb
+  const unitMeta = UNITS_META.find(u => u.classes.includes(cn));
+  const userRecord = window.CURRENT_USER
+    ? (getUsers().find(u => u.id === window.CURRENT_USER.id) || window.CURRENT_USER)
+    : null;
+  const userProds = (userRecord?.products?.length) ? userRecord.products : Object.keys(PRODUCT_CLASSES);
+  const prodMeta  = PRODUCTS_META.find(p => userProds.includes(p.id));
+  const levelMeta = prodMeta ? LEVELS_META.find(l => l.product === prodMeta.id && l.active) : null;
+
+  const breadcrumbHTML = `<div class="hier-breadcrumb" style="margin-bottom:.75rem;">
+    <span class="hier-crumb" onclick="showDashboard()">Home</span>
+    ${prodMeta  ? `<span class="hier-sep">›</span><span class="hier-crumb" onclick="showDashboard()">${prodMeta.name}</span>` : ''}
+    ${levelMeta ? `<span class="hier-sep">›</span><span class="hier-crumb" onclick="showDashboard()">${levelMeta.name} ${levelMeta.title}</span>` : ''}
+    ${unitMeta  ? `<span class="hier-sep">›</span><span class="hier-crumb" onclick="openUnit('${unitMeta.id}')">${unitMeta.icon} ${unitMeta.title}</span>` : ''}
+    <span class="hier-sep">›</span><span class="hier-current">Class ${cn}</span>
+  </div>`;
+
   document.getElementById('class-detail-content').innerHTML = `
     <div class="class-header">
-      <div class="class-breadcrumb">
-        <span onclick="showDashboard()">Dashboard</span> /
-        <span>${meta?.unitIcon} ${meta?.unit}</span> /
-        <span>Class ${cn}</span>
-      </div>
+      ${breadcrumbHTML}
       <div class="class-title">Class ${cn}: <em>${meta?.name||'Class '+cn}</em></div>
       <div class="class-meta">
         <span class="badge ${typeCls}">${meta?.type||'speaking'}</span>
