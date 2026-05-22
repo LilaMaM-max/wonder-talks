@@ -325,6 +325,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .sl-progress{width:80px;height:5px;background:var(--border);border-radius:3px;}
 .sl-progress-fill{height:100%;border-radius:3px;background:var(--purple);}
 
+/* ── STUDENT LEARNING HUB ── */
+.s-hub{padding:1.75rem 2rem;max-width:940px;}
+/* Hero */
+.s-hub-hero{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:1.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1.25rem;flex-wrap:wrap;}
+.s-hub-greet{font-family:'DM Serif Display',serif;font-size:1.45rem;line-height:1.15;}
+.s-hub-greet em{color:var(--lilac);font-style:italic;}
+.s-hub-tagline{font-size:.8rem;color:rgba(255,255,255,.6);margin-top:.35rem;line-height:1.4;}
+.s-hub-prog-wrap{min-width:170px;}
+.s-hub-prog-meta{font-size:.72rem;color:rgba(255,255,255,.7);margin-bottom:.4rem;display:flex;justify-content:space-between;}
+.s-hub-prog-bar{height:6px;background:rgba(255,255,255,.18);border-radius:3px;}
+.s-hub-prog-fill{height:100%;background:var(--lilac);border-radius:3px;transition:width .3s;}
+/* Section label */
+.s-hub-label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.75rem;}
+/* Continue card */
+.s-hub-continue{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
+.s-hub-resume-btn{display:flex;align-items:center;gap:.9rem;width:100%;padding:.9rem 1.1rem;background:var(--purple);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:background .15s;}
+.s-hub-resume-btn:hover{background:var(--purple-dark);}
+.s-hub-resume-icon{font-size:1.25rem;flex-shrink:0;opacity:.9;}
+.s-hub-resume-main{font-size:.9rem;font-weight:500;line-height:1.3;}
+.s-hub-resume-sub{font-size:.75rem;opacity:.75;margin-top:.15rem;}
+/* Main grid */
+.s-hub-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+.s-hub-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;}
+/* Course items */
+.s-hub-course-item{display:flex;align-items:center;gap:.85rem;padding:.65rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .12s;}
+.s-hub-course-item:last-child{border-bottom:none;}
+.s-hub-course-item:hover .s-hub-course-name{color:var(--purple);}
+.s-hub-course-icon{width:38px;height:38px;border-radius:10px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.s-hub-course-name{font-size:.87rem;font-weight:500;color:var(--ink);}
+.s-hub-course-sub{font-size:.72rem;color:var(--ink-light);margin-top:.1rem;}
+.s-hub-course-pct{font-size:.78rem;font-weight:600;color:var(--purple);flex-shrink:0;}
+/* Upcoming */
+.s-hub-upcoming-item{display:flex;align-items:flex-start;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--border);}
+.s-hub-upcoming-item:last-child{border-bottom:none;}
+.s-hub-upcoming-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);flex-shrink:0;margin-top:.35rem;}
+.s-hub-upcoming-title{font-size:.82rem;font-weight:500;color:var(--ink);}
+.s-hub-upcoming-meta{font-size:.72rem;color:var(--ink-light);margin-top:.1rem;}
+/* Notice board */
+.s-hub-notice-item{padding:.65rem .85rem;border-radius:var(--radius-sm);background:var(--surface);margin-bottom:.5rem;}
+.s-hub-notice-item:last-child{margin-bottom:0;}
+.s-hub-notice-tag{font-size:.65rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--purple);margin-bottom:.25rem;}
+.s-hub-notice-text{font-size:.8rem;color:var(--ink-mid);line-height:1.45;}
+/* Progress section */
+.s-hub-progress-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;}
+.s-hub-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem;}
+.s-hub-stat{text-align:center;padding:.9rem .5rem;background:var(--surface);border-radius:var(--radius-sm);}
+.s-hub-stat-num{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--purple);line-height:1;}
+.s-hub-stat-label{font-size:.7rem;color:var(--ink-light);margin-top:.2rem;}
+/* Activity feed */
+.s-hub-act-item{display:flex;align-items:center;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--border);}
+.s-hub-act-item:last-child{border-bottom:none;}
+.s-hub-act-cls{width:32px;height:32px;border-radius:8px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;color:var(--purple);flex-shrink:0;}
+.s-hub-act-name{font-size:.82rem;color:var(--ink);}
+.s-hub-act-meta{font-size:.72rem;color:var(--ink-light);}
+.s-hub-act-score{font-size:.82rem;font-weight:600;flex-shrink:0;}
+.s-hub-empty{font-size:.8rem;color:var(--ink-light);padding:.75rem 0;}
+@media(max-width:680px){.s-hub{padding:1.1rem 1rem;}.s-hub-grid{grid-template-columns:1fr;}.s-hub-stats-row{grid-template-columns:repeat(3,1fr);}}
+
 /* ── HIERARCHY BREADCRUMB ── */
 .hier-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--ink-light);margin-bottom:1.25rem;flex-wrap:wrap;}
 .hier-crumb{cursor:pointer;color:var(--teal);text-decoration:none;}
@@ -3590,6 +3648,10 @@ function renderStudentPortal() {
       : null;
     idEl.textContent = (userRecord && userRecord.studentId) ? 'Student ID: ' + userRecord.studentId : '';
   }
+  // The hub (products mode) has its own hero — hide the static header strip to avoid duplication
+  var staticHdr = document.querySelector('.student-portal-header');
+  if (staticHdr) staticHdr.style.display = (currentStudentMode === 'products') ? 'none' : '';
+
   if      (currentStudentMode === 'products') renderStudentProducts();
   else if (currentStudentMode === 'levels')   renderStudentLevels();
   else if (currentStudentMode === 'units')    renderStudentUnits();
@@ -3694,33 +3756,209 @@ function teacherAllowedStudents() {
 
 // ── PRODUCT → LEVEL → UNIT → CLASS NAVIGATION ──────────────
 
+// ── Student Learning Hub ─────────────────────────────────────
+// Called when currentStudentMode === 'products' (home state).
+// Replaces the bare product-card list with a full learning hub.
 function renderStudentProducts() {
   currentStudentMode = 'products';
   currentStudentProduct = null;
   currentStudentLevel = null;
   currentStudentUnit = null;
   saveNav();
-  var allowedProducts = studentAllowedProducts();
-  if (!allowedProducts.length) {
-    document.getElementById('student-view-content').innerHTML =
-      '<div style="padding:2rem;text-align:center;color:var(--ink-light);">No products assigned yet. Please contact your teacher or admin.</div>';
-    return;
+
+  var stu = currentStudent;
+  var container = document.getElementById('student-view-content');
+  var allowedPids = studentAllowedProducts();
+
+  // ── Greeting & overall progress ───────────────────────────
+  var hour = new Date().getHours();
+  var tod  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  var firstName = stu.name.split(' ')[0];
+
+  var totalClasses = allowedPids.reduce(function(s, pid) {
+    return s + (PRODUCT_CLASSES[pid] || []).filter(classAllowedForStudent).length;
+  }, 0);
+  var doneCount = COMPLETIONS.size;
+  var pct = totalClasses ? Math.round(doneCount / totalClasses * 100) : 0;
+
+  var primaryProduct = allowedPids.length
+    ? PRODUCTS_META.find(function(p){ return allowedPids.indexOf(p.id) >= 0 && p.active; })
+    : null;
+
+  // ── Continue Learning ─────────────────────────────────────
+  var lastCn   = stu.lastClass;
+  var lastMeta = lastCn ? CLASS_META[lastCn] : null;
+  var lastUnit = lastCn ? UNITS_META.find(function(u){ return u.classes.indexOf(lastCn) >= 0; }) : null;
+  var continueHtml = lastCn
+    ? '<button class="s-hub-resume-btn" onclick="studentGoToClass(' + lastCn + ')">' +
+        '<span class="s-hub-resume-icon">▶</span>' +
+        '<div>' +
+          '<div class="s-hub-resume-main">Resume — Class ' + lastCn + ': ' + (lastMeta ? lastMeta.name : 'Class ' + lastCn) + '</div>' +
+          '<div class="s-hub-resume-sub">' + (lastUnit ? lastUnit.icon + ' ' + lastUnit.title : '') + (primaryProduct ? ' · ' + primaryProduct.name : '') + '</div>' +
+        '</div>' +
+      '</button>'
+    : '<div class="s-hub-empty">No recent lesson yet — choose a course below to start.</div>';
+
+  // ── My Courses ────────────────────────────────────────────
+  var coursesHtml = '';
+  if (!allowedPids.length) {
+    coursesHtml = '<div class="s-hub-empty">No courses assigned yet. Please contact your teacher.</div>';
+  } else {
+    PRODUCTS_META.filter(function(p){ return allowedPids.indexOf(p.id) >= 0 && p.active; })
+      .forEach(function(p) {
+        var lvIds    = studentAllowedLevels(p.id);
+        var lvs      = LEVELS_META.filter(function(l){ return l.product===p.id && l.active && lvIds.indexOf(l.id)>=0; });
+        var totCls = 0, doneCls2 = 0;
+        lvs.forEach(function(lv) {
+          (lv.units||[]).forEach(function(uid) {
+            var u = UNITS_META.find(function(x){ return x.id===uid; });
+            if (!u) return;
+            u.classes.filter(classAllowedForStudent).forEach(function(cn) {
+              totCls++;
+              if (COMPLETIONS.has(cn)) doneCls2++;
+            });
+          });
+        });
+        var cPct     = totCls ? Math.round(doneCls2/totCls*100) : 0;
+        var lvLabel  = lvs.length ? lvs.map(function(l){ return l.name+' '+l.title; }).join(' · ') : 'All levels';
+        coursesHtml +=
+          '<div class="s-hub-course-item" onclick="studentOpenProduct(\'' + p.id + '\')">' +
+            '<div class="s-hub-course-icon">' + p.icon + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="s-hub-course-name">' + p.name + '</div>' +
+              '<div class="s-hub-course-sub">' + lvLabel + '</div>' +
+            '</div>' +
+            '<div class="s-hub-course-pct">' + cPct + '%</div>' +
+          '</div>';
+      });
   }
-  var html = '<div class="student-products">';
-  var visible = PRODUCTS_META.filter(function(p){ return allowedProducts.indexOf(p.id) >= 0 && p.active; });
-  visible.forEach(function(p) {
-    html += `<div class="student-product-card" onclick="studentOpenProduct('${p.id}')">
-      <div class="sp-icon">${p.icon}</div>
-      <div style="flex:1;">
-        <div class="sp-name">${p.name}</div>
-        <span class="sp-tag">${p.tagline}</span>
-        <div class="sp-desc">${p.desc}</div>
-      </div>
-      <div class="sp-arrow">›</div>
-    </div>`;
-  });
-  html += '</div>';
-  document.getElementById('student-view-content').innerHTML = html;
+
+  // ── Upcoming Classes ──────────────────────────────────────
+  // Lightweight placeholder — next suggested class based on progress
+  var nextCn   = (lastCn && lastCn < 72) ? lastCn + 1 : (!lastCn ? 1 : null);
+  var nextMeta = nextCn ? CLASS_META[nextCn] : null;
+  var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
+  var upcomingHtml = '';
+  if (nextCn) {
+    upcomingHtml +=
+      '<div class="s-hub-upcoming-item">' +
+        '<div class="s-hub-upcoming-dot"></div>' +
+        '<div>' +
+          '<div class="s-hub-upcoming-title">Class ' + nextCn + (nextMeta ? ': ' + nextMeta.name : '') + '</div>' +
+          '<div class="s-hub-upcoming-meta">' + (nextUnit ? nextUnit.icon + ' ' + nextUnit.title : '') + ' · Up next</div>' +
+        '</div>' +
+      '</div>';
+  }
+  upcomingHtml +=
+    '<div class="s-hub-upcoming-item">' +
+      '<div class="s-hub-upcoming-dot" style="background:var(--border-mid);"></div>' +
+      '<div>' +
+        '<div class="s-hub-upcoming-title" style="color:var(--ink-light);">Live schedule coming soon</div>' +
+        '<div class="s-hub-upcoming-meta">Your teacher will publish session times here</div>' +
+      '</div>' +
+    '</div>';
+
+  // ── Notice Board ──────────────────────────────────────────
+  var noticeHtml =
+    '<div class="s-hub-notice-item">' +
+      '<div class="s-hub-notice-tag">Welcome</div>' +
+      '<div class="s-hub-notice-text">Welcome to Wonder Talks! Announcements, reminders, and class news from your teacher will appear here.</div>' +
+    '</div>';
+
+  // ── My Progress stats ─────────────────────────────────────
+  var recentAttempts = (stu.attempts || []).slice(0, 5);
+  var avgScore = recentAttempts.length
+    ? Math.round(recentAttempts.reduce(function(s, a){ return s+a.score; }, 0) / recentAttempts.length)
+    : 0;
+  var activityHtml = recentAttempts.length
+    ? recentAttempts.map(function(a) {
+        var sc = a.score >= 85 ? 'var(--green)' : a.score >= 70 ? '#7C3AED' : 'var(--ink-light)';
+        return '<div class="s-hub-act-item">' +
+          '<div class="s-hub-act-cls">' + a.class + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="s-hub-act-name">' + a.name + '</div>' +
+            '<div class="s-hub-act-meta">' + a.date + '</div>' +
+          '</div>' +
+          '<div class="s-hub-act-score" style="color:' + sc + ';">' + a.score + '%</div>' +
+        '</div>';
+      }).join('')
+    : '<div class="s-hub-empty">No activity yet — complete your first class to see results here.</div>';
+
+  // ── Assemble hub ──────────────────────────────────────────
+  container.innerHTML =
+    '<div class="s-hub">' +
+
+      // Hero
+      '<div class="s-hub-hero">' +
+        '<div>' +
+          '<div class="s-hub-greet">' + tod + ', <em>' + firstName + '!</em></div>' +
+          '<div class="s-hub-tagline">' + (primaryProduct ? primaryProduct.name + ' · ' : '') + 'Every class brings you closer to real fluency.</div>' +
+        '</div>' +
+        '<div class="s-hub-prog-wrap">' +
+          '<div class="s-hub-prog-meta"><span>' + pct + '% complete</span><span>' + doneCount + ' / ' + totalClasses + ' classes</span></div>' +
+          '<div class="s-hub-prog-bar"><div class="s-hub-prog-fill" style="width:' + pct + '%;"></div></div>' +
+        '</div>' +
+      '</div>' +
+
+      // Continue
+      '<div class="s-hub-continue">' +
+        '<div class="s-hub-label">Continue Learning</div>' +
+        continueHtml +
+      '</div>' +
+
+      // Grid
+      '<div class="s-hub-grid">' +
+        // Left — My Courses
+        '<div class="s-hub-card">' +
+          '<div class="s-hub-label">My Courses</div>' +
+          coursesHtml +
+        '</div>' +
+        // Right — Upcoming + Notices (stacked)
+        '<div style="display:flex;flex-direction:column;gap:1.25rem;">' +
+          '<div class="s-hub-card">' +
+            '<div class="s-hub-label">Upcoming Classes</div>' +
+            upcomingHtml +
+          '</div>' +
+          '<div class="s-hub-card">' +
+            '<div class="s-hub-label">Notice Board</div>' +
+            noticeHtml +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // Progress
+      '<div class="s-hub-progress-section">' +
+        '<div class="s-hub-label" style="margin-bottom:.9rem;">My Progress</div>' +
+        '<div class="s-hub-stats-row">' +
+          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + doneCount + '</div><div class="s-hub-stat-label">Classes Complete</div></div>' +
+          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + pct + '%</div><div class="s-hub-stat-label">Overall Progress</div></div>' +
+          '<div class="s-hub-stat"><div class="s-hub-stat-num">' + (avgScore||'—') + (avgScore?'%':'') + '</div><div class="s-hub-stat-label">Avg. Score</div></div>' +
+        '</div>' +
+        '<div class="s-hub-label">Recent Activity</div>' +
+        activityHtml +
+      '</div>' +
+
+    '</div>';
+}
+
+// Navigate to a class from the hub, setting full product/level/unit context
+function studentGoToClass(cn) {
+  var u = UNITS_META.find(function(u){ return u.classes.indexOf(cn) >= 0; });
+  var pid = studentAllowedProducts().find(function(pid){ return (PRODUCT_CLASSES[pid]||[]).indexOf(cn)>=0; });
+  if (pid) {
+    currentStudentProduct = PRODUCTS_META.find(function(p){ return p.id===pid; }) || null;
+    var lvId = studentAllowedLevels(pid).find(function(lid){
+      var lv = LEVELS_META.find(function(l){ return l.id===lid; });
+      return lv && lv.units && u && lv.units.indexOf(u.id) >= 0;
+    });
+    currentStudentLevel = lvId ? (LEVELS_META.find(function(l){ return l.id===lvId; }) || null) : null;
+  }
+  currentStudentUnit  = u || null;
+  currentStudentClass = cn;
+  currentStudentMode  = 'class';
+  currentStudentStage = 'vocab';
+  saveNav();
+  renderStudentClass();
 }
 
 function studentOpenProduct(pid) {
