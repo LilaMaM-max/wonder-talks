@@ -1484,7 +1484,7 @@ z"/></symbol></svg>
             <select id="new-role">
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
-              <option value="sub-admin">Sub-Admin</option>
+              <option value="operator">Operator</option>
               <option value="admin">Admin</option>
             </select>
           </div>
@@ -8450,7 +8450,7 @@ const UNITS9_REMAINING = {
         window.CURRENT_USER = _savedUser;
         applyRoleAccess(_savedUser);
         // Teachers: applyRoleAccess forces v-dashboard, so restore their view after
-        if (_nav && (_savedUser.role === 'teacher' || _savedUser.role === 'admin' || _savedUser.role === 'sub-admin')) {
+        if (_nav && (_savedUser.role === 'teacher' || _savedUser.role === 'admin' || _savedUser.role === 'operator')) {
           var _tv = _nav.teacherView;
           var _tc = _nav.teacherClass;
           if (_tv && _tv !== 'v-dashboard') {
