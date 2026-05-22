@@ -314,25 +314,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .su-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--purple) 0%,var(--lilac) 100%);transition:width .3s ease;}
 
 /* ── PRODUCT & LEVEL CARDS ── */
-.student-products{padding:2.5rem 2rem;max-width:900px;margin:0 auto;}
-.student-product-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:2rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;}
-.student-product-card:hover{border-color:var(--purple);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.student-products{padding:1.5rem 2rem 2rem;}
+.student-product-card{background:#fff;border-radius:14px;border:none;padding:2rem;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(45,45,45,.06),0 4px 16px rgba(75,0,130,.06);}
+.student-product-card:hover{box-shadow:0 6px 24px rgba(75,0,130,.15);transform:translateY(-2px);}
 .sp-icon{font-size:2.2rem;flex-shrink:0;}
 .sp-name{font-weight:600;font-size:1.05rem;color:var(--ink);margin-bottom:.2rem;}
 .sp-tag{display:inline-block;font-size:.7rem;font-weight:500;padding:.15rem .5rem;border-radius:20px;background:var(--lilac-light);color:var(--purple);margin-bottom:.4rem;}
 .sp-desc{font-size:.8rem;color:var(--ink-light);line-height:1.5;}
 .sp-arrow{margin-left:auto;font-size:1.2rem;color:var(--purple);opacity:.5;}
 
-.student-levels{padding:2rem 2rem 1.5rem;max-width:900px;margin:0 auto;}
-.student-level-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem 1.75rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:1.25rem;margin-bottom:.75rem;}
-.student-level-card:hover{border-color:var(--purple);box-shadow:var(--shadow);transform:translateY(-1px);}
+.student-levels{padding:1.5rem 2rem 2rem;}
+.student-level-card{background:#fff;border-radius:14px;border:none;padding:1.5rem 1.75rem;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;display:flex;align-items:center;gap:1.25rem;margin-bottom:.85rem;box-shadow:0 1px 4px rgba(45,45,45,.06),0 4px 16px rgba(75,0,130,.06);}
+.student-level-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(75,0,130,.14);}
 .sl-badge{min-width:52px;height:52px;border-radius:12px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;}
 .sl-name{font-weight:600;font-size:.95rem;color:var(--ink);margin-bottom:.15rem;}
 .sl-cefr{font-size:.72rem;color:var(--ink-light);margin-bottom:.25rem;}
 .sl-desc{font-size:.78rem;color:var(--ink-light);line-height:1.5;}
 .sl-meta{margin-left:auto;text-align:right;flex-shrink:0;}
 .sl-progress-label{font-size:.72rem;color:var(--ink-light);margin-bottom:.3rem;}
-.sl-progress{width:80px;height:5px;background:var(--border);border-radius:3px;}
+.sl-progress{width:100px;height:5px;background:rgba(45,45,45,.07);border-radius:3px;}
+.sl-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--purple) 0%,var(--lilac) 100%);}
 .sl-progress-fill{height:100%;border-radius:3px;background:var(--purple);}
 
 /* ── STUDENT LEARNING HUB ── */
@@ -426,9 +427,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .sidebar-product-label{font-size:.82rem;font-weight:600;color:#fff;margin-bottom:.2rem;}
 .sidebar-level-ctx{font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.6);}
 
-.student-class-list{padding:1.5rem 2rem;}
-.student-class-item{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;margin-bottom:.5rem;cursor:pointer;transition:all .15s;}
-.student-class-item:hover{border-color:var(--purple);background:var(--lilac-light);}
+.student-class-list{padding:1.5rem 2rem 2rem;}
+.student-class-item{display:flex;align-items:center;gap:.9rem;padding:.85rem 1rem;border-radius:12px;border:none;background:#fff;margin-bottom:.65rem;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 1px 4px rgba(45,45,45,.06),0 4px 12px rgba(75,0,130,.05);}
+.student-class-item:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(75,0,130,.12);}
 .sci-num{width:28px;height:28px;border-radius:50%;background:var(--lilac-light);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;}
 .sci-name{flex:1;font-size:.85rem;font-weight:500;}
 .sci-badge{font-size:.7rem;padding:.15rem .5rem;border-radius:20px;}
@@ -525,7 +526,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 }
 
 /* Student hub detail pages — class-based so media queries can reach them */
-.s-detail-page{padding:1.75rem 2rem;}
+.s-detail-page{padding:1.5rem 2rem 2rem;}
 .s-detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;}
 @media(max-width:700px){
   .s-detail-page{padding:1.1rem 1.25rem;}
@@ -3995,12 +3996,13 @@ function renderStudentCourses() {
   if (pids.length === 1) { studentOpenProduct(pids[0]); return; }
   currentStudentMode = 'courselist';
   saveNav();
-  var html = '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb">' +
-      '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Courses</span>' +
-    '</div>' +
-    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Courses</div>';
+  var crumbBar = '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
+    '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
+    '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+    '<span class="hier-current">My Courses</span>' +
+    '</div></div>';
+  var html = crumbBar + '<div class="s-detail-page">' +
+    '<div class="su-page-header"><h1 class="su-page-title">My Courses</h1><p class="su-page-sub">Your enrolled programmes</p></div>';
   if (!pids.length) {
     html += '<div class="s-hub-empty">No courses assigned yet. Please contact your teacher.</div>';
   } else {
@@ -4036,12 +4038,13 @@ function renderStudentSchedule() {
   var nextMeta = nextCn ? CLASS_META[nextCn] : null;
   var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
   var html =
-    '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Upcoming Classes</span>' +
-    '</div>' +
-    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Upcoming Classes</div>';
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+      '<span class="hier-current">Upcoming Classes</span>' +
+    '</div></div>' +
+    '<div class="s-detail-page">' +
+    '<div class="su-page-header"><h1 class="su-page-title">Upcoming Classes</h1><p class="su-page-sub">What\'s next in your learning journey</p></div>';
   if (nextCn) {
     html +=
       '<div class="s-hub-card" style="margin-bottom:1rem;cursor:pointer;" onclick="studentGoToClass('+nextCn+')">' +
@@ -4070,12 +4073,13 @@ function renderStudentNotices() {
   currentStudentMode = 'notices';
   saveNav();
   document.getElementById('student-view-content').innerHTML =
-    '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Notice Board</span>' +
-    '</div>' +
-    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Notice Board</div>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+      '<span class="hier-current">Notice Board</span>' +
+    '</div></div>' +
+    '<div class="s-detail-page">' +
+    '<div class="su-page-header"><h1 class="su-page-title">Notice Board</h1><p class="su-page-sub">Announcements and updates from your teacher</p></div>' +
     '<div class="s-hub-notice-item" style="margin-bottom:.75rem;">' +
       '<div class="s-hub-notice-tag">Welcome</div>' +
       '<div class="s-hub-notice-text">Welcome to Wonder Talks! This is where your teacher will share announcements, reminders, and important class information. Check back regularly.</div>' +
@@ -4133,12 +4137,13 @@ function renderStudentProgress() {
   }).join('');
 
   document.getElementById('student-view-content').innerHTML =
-    '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Progress</span>' +
-    '</div>' +
-    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Progress</div>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+      '<span class="hier-current">My Progress</span>' +
+    '</div></div>' +
+    '<div class="s-detail-page">' +
+    '<div class="su-page-header"><h1 class="su-page-title">My Progress</h1><p class="su-page-sub">Track your learning journey</p></div>' +
     '<div class="s-hub-stats-row" style="margin-bottom:1.5rem;">' +
       '<div class="s-hub-stat"><div class="s-hub-stat-num">'+doneCount+'</div><div class="s-hub-stat-label">Classes Complete</div></div>' +
       '<div class="s-hub-stat"><div class="s-hub-stat-num">'+pct+'%</div><div class="s-hub-stat-label">Overall Progress</div></div>' +
@@ -4171,7 +4176,12 @@ function renderStudentLevels() {
   </div>`;
   const allowedLevelIds = studentAllowedLevels(p.id);
   const levels = LEVELS_META.filter(function(l){ return l.product === p.id && l.active && allowedLevelIds.indexOf(l.id) >= 0; });
-  let html = `<div class="student-levels">${crumb}`;
+  let html = `<div class="su-crumb-bar">${crumb}</div>
+    <div class="student-levels">
+      <div class="su-page-header">
+        <h1 class="su-page-title">${p.name}</h1>
+        <p class="su-page-sub">Select your level to explore units and classes</p>
+      </div>`;
   levels.forEach(function(lv) {
     const lvUnits = (lv.units||[]).map(function(uid){ return UNITS_META.find(function(u){ return u.id===uid; }); }).filter(Boolean);
     const totalCls = lvUnits.reduce(function(s,u){ return s + u.classes.filter(classAllowedForStudent).length; }, 0);
@@ -4181,11 +4191,9 @@ function renderStudentLevels() {
       <div class="sl-badge">${lv.name}</div>
       <div style="flex:1;">
         <div style="font-weight:600;font-size:.95rem;color:var(--ink);margin-bottom:.15rem;">${lv.title} <span style="font-size:.72rem;font-weight:400;color:var(--ink-light);">${lv.cefr}</span></div>
-        <div style="font-size:.8rem;color:var(--ink-light);margin-bottom:.5rem;">${lv.desc}</div>
-        <div style="height:4px;width:160px;background:var(--border);border-radius:2px;">
-          <div style="height:100%;border-radius:2px;background:var(--purple);width:${pct}%"></div>
-        </div>
-        <div style="font-size:.7rem;color:var(--ink-light);margin-top:.3rem;">${doneCls}/${totalCls} classes complete</div>
+        <div style="font-size:.8rem;color:var(--ink-light);margin-bottom:.55rem;">${lv.desc}</div>
+        <div class="sl-progress"><div class="sl-progress-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:.7rem;color:var(--ink-light);margin-top:.35rem;">${doneCls}/${totalCls} classes complete</div>
       </div>
       <div class="sp-arrow">›</div>
     </div>`;
@@ -4271,7 +4279,13 @@ function renderStudentClasses() {
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     <span class="hier-current">${u.icon} ${u.title}</span>
   </div>`;
-  let html = `<div class="student-class-list">${crumb}`;
+  const totalCls = u.classes.filter(classAllowedForStudent).length;
+  let html = `<div class="su-crumb-bar">${crumb}</div>
+    <div class="student-class-list">
+      <div class="su-page-header">
+        <h1 class="su-page-title">${u.icon} ${u.title}</h1>
+        <p class="su-page-sub">${totalCls} class${totalCls !== 1 ? 'es' : ''} available</p>
+      </div>`;
   u.classes.filter(classAllowedForStudent).forEach(cn => {
     const done = COMPLETIONS.has(cn);
     const meta = CLASS_META[cn];
@@ -4283,7 +4297,7 @@ function renderStudentClasses() {
       ${done?`<span class="sci-done">✅</span>`:''}
     </div>`;
   });
-  html += '</div>';
+  html += '</div></div>';
   document.getElementById('student-view-content').innerHTML = html;
 }
 
@@ -4316,12 +4330,12 @@ function renderStudentClass() {
   const stages = ['vocab','listen','dialogue','grammar','exercises','pronunciation'];
   const stageLabels = {vocab:'📝\nVocab',listen:'🔊\nListen',dialogue:'💬\nDialogue',grammar:'📐\nGrammar',exercises:'✏️\nExercises',pronunciation:'🗣️\nPronunc.'};
 
-  let html = `<div class="student-class-detail">
-    ${crumb}
-    <div style="margin-bottom:1rem;">
-      <div style="font-size:1.05rem;font-weight:600;color:var(--ink);">${meta?.name||'Class '+cn}</div>
-      <div style="font-size:.78rem;color:var(--ink-light);margin-top:.15rem;">${u?.title||''} · Class ${cn}</div>
-    </div>
+  let html = `<div class="su-crumb-bar">${crumb}</div>
+    <div class="student-class-detail">
+      <div class="su-page-header">
+        <h1 class="su-page-title">Class ${cn}${meta?.name ? ': ' + meta.name : ''}</h1>
+        <p class="su-page-sub">${u?.title || ''}</p>
+      </div>
     <div class="student-stages-bar">
       ${stages.map(s => `<button class="student-stage-btn ${s===currentStudentStage?'active':''}" data-stage="${s}" onclick="switchStudentStage('${s}')">
         <span class="s-icon">${stageLabels[s].split('\n')[0]}</span>${stageLabels[s].split('\n')[1]}
