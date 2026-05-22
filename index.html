@@ -466,7 +466,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .ls-context{font-size:.82rem;color:var(--ink-mid);line-height:1.6;padding:.7rem 1rem;background:var(--lilac-light);border-radius:10px;margin-bottom:1rem;border-left:3px solid var(--purple);}
 .ls-player{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(45,45,45,.06),0 3px 12px rgba(75,0,130,.05);padding:.9rem 1.1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:box-shadow .18s;}
 .ls-player:hover{box-shadow:0 4px 18px rgba(75,0,130,.12);}
-.ls-play-btn{width:36px;height:36px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;border:none;pointer-events:none;}
+.ls-play-btn{width:36px;height:36px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;border:none;pointer-events:none;}
 .ls-info{flex:1;}
 .ls-title{font-weight:600;font-size:.85rem;color:var(--ink);}
 .ls-sub{font-size:.72rem;color:var(--ink-light);margin-top:.1rem;}
@@ -3554,6 +3554,8 @@ function renderAudio(cn, data) {
 
 /* ── WEB SPEECH API AUDIO ENGINE ── */
 var _ttsEl = null;
+var _ICON_PLAY  = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" style="display:block"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
+var _ICON_PAUSE = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" style="display:block"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
 
 // Accent preference: 'us' (American) or 'gb' (British) — persisted in localStorage
 window._ttsAccent = (function(){ try { return localStorage.getItem('wt_tts_accent') || 'us'; } catch(e){ return 'us'; } })();
@@ -3600,7 +3602,7 @@ function _stopCurrent() {
   if (_ttsEl) {
     window.speechSynthesis.cancel();
     var icon = _ttsEl.querySelector('.audio-icon') || _ttsEl;
-    icon.textContent = '▶️';
+    icon.innerHTML = _ICON_PLAY;
     delete _ttsEl.dataset.playing;
     _ttsEl = null;
   }
@@ -3621,10 +3623,10 @@ function _ttsSpeak(el, text, rate) {
     var v = _getEnVoices().female;
     if (v) utter.voice = v;
     el.dataset.playing = '1';
-    iconEl.textContent = '⏸️';
+    iconEl.innerHTML = _ICON_PAUSE;
     _ttsEl = el;
     utter.onend = utter.onerror = function() {
-      if (_ttsEl === el) { iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; }
+      if (_ttsEl === el) { iconEl.innerHTML = _ICON_PLAY; delete el.dataset.playing; _ttsEl = null; }
     };
     window.speechSynthesis.speak(utter);
   }
@@ -3649,12 +3651,12 @@ function playDialogue(el, cn, rate) {
     var voiceMap = {};
     speakers.forEach(function(sp, i) { voiceMap[sp] = i % 2 === 0 ? voices.male : voices.female; });
     el.dataset.playing = '1';
-    iconEl.textContent = '⏸️';
+    iconEl.innerHTML = _ICON_PAUSE;
     _ttsEl = el;
     var idx = 0;
     function next() {
       if (idx >= lines.length || !el.dataset.playing) {
-        iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; return;
+        iconEl.innerHTML = _ICON_PLAY; delete el.dataset.playing; _ttsEl = null; return;
       }
       var line = lines[idx++];
       var utter = new SpeechSynthesisUtterance(line.en); // only the spoken line, no role prefix
@@ -3663,7 +3665,7 @@ function playDialogue(el, cn, rate) {
       utter.pitch = 1;
       if (voiceMap[line.sp]) utter.voice = voiceMap[line.sp];
       utter.onend = next;
-      utter.onerror = function() { iconEl.textContent = '▶️'; delete el.dataset.playing; _ttsEl = null; };
+      utter.onerror = function() { iconEl.innerHTML = _ICON_PLAY; delete el.dataset.playing; _ttsEl = null; };
       window.speechSynthesis.speak(utter);
     }
     next();
@@ -4541,14 +4543,14 @@ function renderStudentStage(cn, stage, data) {
     return `<div>
       <div class="ls-context">${warmup}</div>
       <div class="ls-player" onclick="playDialogue(this,${cn},1)">
-        <button class="ls-play-btn"><span class="audio-icon">▶</span></button>
+        <button class="ls-play-btn"><span class="audio-icon">${_ICON_PLAY}</span></button>
         <div class="ls-info">
           <div class="ls-title">Full Dialogue — Natural Speed</div>
           <div class="ls-sub">Two voices · Class ${cn}</div>
         </div>
       </div>
       <div class="ls-player" onclick="playDialogue(this,${cn},0.72)">
-        <button class="ls-play-btn"><span class="audio-icon">▶</span></button>
+        <button class="ls-play-btn"><span class="audio-icon">${_ICON_PLAY}</span></button>
         <div class="ls-info">
           <div class="ls-title">Slow Version</div>
           <div class="ls-sub">Clearer pronunciation · reduced speed</div>
@@ -4645,25 +4647,25 @@ function renderStudentStage(cn, stage, data) {
 
 /* ── VOCAB helpers ── */
 function vsReveal(cn, i) {
-  const tr = document.getElementById('vs-tr-'+cn+'-'+i);
-  const btn = document.getElementById('vs-rbtn-'+cn+'-'+i);
-  if (tr) tr.classList.add('open');
-  if (btn) btn.style.display = 'none';
+  var tr  = document.getElementById('vs-tr-'+cn+'-'+i);
+  var btn = document.getElementById('vs-rbtn-'+cn+'-'+i);
+  if (!tr) return;
+  var open = tr.classList.toggle('open');
+  if (btn) btn.textContent = open ? 'Hide' : 'Show';
 }
 function vsNote(cn, i) {
-  const el = document.getElementById('vs-note-'+cn+'-'+i);
+  var el = document.getElementById('vs-note-'+cn+'-'+i);
   if (!el) return;
-  const open = el.classList.toggle('open');
-  // update note button text via parent
-  const tr = document.getElementById('vs-tr-'+cn+'-'+i);
+  var open = el.classList.toggle('open');
+  var tr = document.getElementById('vs-tr-'+cn+'-'+i);
   if (tr) {
-    const nb = tr.querySelector('.vs-note-btn');
+    var nb = tr.querySelector('.vs-note-btn');
     if (nb) nb.textContent = open ? 'note ▴' : 'note ▾';
   }
 }
 function vsRevealAll() {
   document.querySelectorAll('.vs-translation').forEach(function(el){ el.classList.add('open'); });
-  document.querySelectorAll('.vs-reveal-btn').forEach(function(el){ el.style.display='none'; });
+  document.querySelectorAll('.vs-reveal-btn').forEach(function(el){ el.style.display=''; el.textContent='Hide'; });
 }
 
 /* ── LISTEN helpers ── */
