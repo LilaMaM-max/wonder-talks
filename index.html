@@ -461,6 +461,69 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
   .units-grid{grid-template-columns:repeat(2,1fr);}
 }
 
+/* ── GLOBAL RESPONSIVE GAPS (all roles) ─────────────────────── */
+
+/* Teacher dashboard — tighter padding on mobile */
+@media(max-width:600px){
+  .dashboard{padding:1rem;}
+  .dash-hero{padding:1.25rem 1rem;}
+  .dash-stats{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:420px){
+  .dash-stats{grid-template-columns:1fr;}
+}
+
+/* Admin panel — tabs wrap on small screens */
+@media(max-width:600px){
+  .admin-tabs{flex-wrap:wrap;}
+  .admin-tab{flex:1 0 calc(50% - 4px);text-align:center;font-size:.78rem;}
+}
+
+/* Student portal — view container paddings */
+@media(max-width:600px){
+  .student-class-list,.student-class-detail{padding:1rem;}
+  .student-levels,.student-units{padding:1rem;}
+  .student-products{padding:1rem;}
+  .student-product-card{padding:1.1rem;}
+  .student-level-card{padding:1rem 1.1rem;}
+  .student-stage-content{padding:1rem;min-height:160px;}
+}
+
+/* Stage buttons — more comfortable wrapping */
+@media(max-width:700px){
+  .stages-bar,.student-stages-bar{flex-wrap:wrap;}
+  .stage-btn,.student-stage-btn{flex:1 0 calc(33.33% - 2px);}
+}
+
+/* Vocab rows — stack on very narrow screens */
+@media(max-width:420px){
+  .vocab-student-item{flex-wrap:wrap;}
+  .vsi-hint,.vsi-pt{flex:0 0 100%;}
+}
+
+/* Attempt/roster rows */
+@media(max-width:600px){
+  .attempt-row{flex-wrap:wrap;gap:.25rem;}
+  .attempt-row span{font-size:.74rem;}
+}
+
+/* s-hub hero — compact on mobile */
+@media(max-width:600px){
+  .s-hub-hero{padding:1.1rem 1.25rem;flex-direction:column;align-items:flex-start;gap:.85rem;}
+  .s-hub-prog-wrap{width:100%;}
+}
+
+/* Student hub detail pages — class-based so media queries can reach them */
+.s-detail-page{padding:1.75rem 2rem;}
+.s-detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;}
+@media(max-width:700px){
+  .s-detail-page{padding:1.1rem 1.25rem;}
+  .s-detail-grid{grid-template-columns:1fr;}
+}
+@media(max-width:440px){
+  .s-detail-page{padding:.85rem 1rem;}
+}
+
 /* ── AUTH LAYER ── */
 .auth-overlay{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;}
 .auth-box{background:var(--warm-white);border-radius:var(--radius);width:100%;max-width:380px;box-shadow:var(--shadow-md);padding:2.5rem 2rem;}
@@ -3921,7 +3984,7 @@ function renderStudentCourses() {
   if (pids.length === 1) { studentOpenProduct(pids[0]); return; }
   currentStudentMode = 'courselist';
   saveNav();
-  var html = '<div style="padding:1.75rem 2rem;max-width:860px;">' +
+  var html = '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">My Courses</span>' +
@@ -3962,7 +4025,7 @@ function renderStudentSchedule() {
   var nextMeta = nextCn ? CLASS_META[nextCn] : null;
   var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
   var html =
-    '<div style="padding:1.75rem 2rem;max-width:680px;">' +
+    '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">Upcoming Classes</span>' +
@@ -3996,7 +4059,7 @@ function renderStudentNotices() {
   currentStudentMode = 'notices';
   saveNav();
   document.getElementById('student-view-content').innerHTML =
-    '<div style="padding:1.75rem 2rem;max-width:680px;">' +
+    '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">Notice Board</span>' +
@@ -4059,7 +4122,7 @@ function renderStudentProgress() {
   }).join('');
 
   document.getElementById('student-view-content').innerHTML =
-    '<div style="padding:1.75rem 2rem;max-width:860px;">' +
+    '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">My Progress</span>' +
@@ -4070,7 +4133,7 @@ function renderStudentProgress() {
       '<div class="s-hub-stat"><div class="s-hub-stat-num">'+pct+'%</div><div class="s-hub-stat-label">Overall Progress</div></div>' +
       '<div class="s-hub-stat"><div class="s-hub-stat-num">'+(avgScore||'—')+(avgScore?'%':'')+'</div><div class="s-hub-stat-label">Avg. Score</div></div>' +
     '</div>' +
-    '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;">' +
+    '<div class="s-detail-grid">' +
       '<div class="s-hub-card"><div class="s-hub-label" style="margin-bottom:.85rem;">Recent Activity</div>'+actHtml+'</div>' +
       '<div style="display:flex;flex-direction:column;gap:1.25rem;">' +
         (catHtml?'<div class="s-hub-card"><div class="s-hub-label" style="margin-bottom:.85rem;">Skills Breakdown</div>'+catHtml+'</div>':'') +
