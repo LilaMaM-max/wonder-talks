@@ -111,6 +111,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .quick-unit-row:hover{color:var(--purple);}
 .quick-unit-label{flex:1;font-size:.8rem;color:var(--ink-mid);}
 .quick-unit-sub{font-size:.7rem;color:var(--ink-light);}
+/* Sidebar curriculum collapse */
+.sidebar-curriculum-toggle{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem .45rem;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border);}
+.sidebar-curriculum-toggle:hover{background:var(--lilac-light);}
+.sidebar-curriculum-toggle-label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-light);}
+.sidebar-curriculum-toggle-arrow{font-size:.65rem;color:var(--ink-light);transition:transform .2s;flex-shrink:0;}
+.sidebar-curriculum-toggle.open .sidebar-curriculum-toggle-arrow{transform:rotate(90deg);}
+.sidebar-curriculum-body{display:none;}
+.sidebar-curriculum-body.open{display:block;}
+/* Quick access: continue + recent classes */
+.quick-continue-btn{display:flex;align-items:center;gap:.65rem;width:100%;padding:.6rem .8rem;border:1.5px solid var(--purple);background:var(--purple-light);border-radius:var(--radius-sm);cursor:pointer;font-size:.82rem;font-weight:500;color:var(--purple);margin-bottom:.85rem;text-align:left;transition:all .15s;}
+.quick-continue-btn:hover{background:var(--purple);color:#fff;}
+.quick-continue-btn .quick-continue-icon{font-size:1rem;flex-shrink:0;}
+.quick-continue-sub{font-size:.72rem;font-weight:400;opacity:.75;display:block;margin-top:.1rem;}
+.quick-recent-item{display:flex;align-items:center;gap:.6rem;padding:.42rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .12s;}
+.quick-recent-item:last-of-type{border-bottom:none;}
+.quick-recent-item:hover .quick-recent-label{color:var(--purple);}
+.quick-recent-label{flex:1;font-size:.8rem;color:var(--ink-mid);}
+.quick-recent-num{font-size:.72rem;color:var(--ink-light);background:var(--surface);padding:.15rem .4rem;border-radius:4px;flex-shrink:0;}
 /* Roster */
 .roster-list{display:flex;flex-direction:column;gap:.75rem;}
 .roster-item{display:flex;align-items:center;gap:.9rem;padding:.75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--warm-white);cursor:pointer;transition:all .15s;}
@@ -2667,6 +2685,7 @@ window.currentStage = 'overview';
 window.currentStudentMode = 'products';
 window.currentStudentProduct = null;
 window.currentStudentLevel = null;
+window.sidebarExpanded = false;
 window.currentStudentUnit = null;
 window.currentStudentClass = null;
 window.currentStudentStage = 'vocab';
@@ -2716,27 +2735,49 @@ function buildSidebar() {
       <div class="sidebar-level-ctx">${lvNames}</div>
     </div>`;
   });
-  let html = ctxHtml + '<div class="sidebar-section">Units & Classes</div>';
+
+  // Build unit HTML (inside collapsible body)
+  let unitsHtml = '';
   UNITS_META.forEach(u => {
     const unitClasses = u.classes.filter(cn => allowed.indexOf(cn) >= 0);
-    if (!unitClasses.length) return; // skip units with no accessible classes
-    const done = unitClasses.filter(c => COMPLETIONS.has(c)).length;
-    html += `<div class="sidebar-unit" id="sb-${u.id}">
+    if (!unitClasses.length) return;
+    const doneCount = unitClasses.filter(c => COMPLETIONS.has(c)).length;
+    unitsHtml += `<div class="sidebar-unit" id="sb-${u.id}">
       <div class="sidebar-unit-header" onclick="toggleSidebarUnit('${u.id}')">
         <span class="sidebar-unit-icon">${u.icon}</span>
         <span class="sidebar-unit-title">${u.title}</span>
-        <span class="sidebar-unit-count">${done}/${unitClasses.length}</span>
+        <span class="sidebar-unit-count">${doneCount}/${unitClasses.length}</span>
       </div>
       <div class="sidebar-classes">`;
     unitClasses.forEach(cn => {
-      const done = COMPLETIONS.has(cn);
-      html += `<button class="sidebar-class-btn ${done?'done':''}" id="sb-cls-${cn}" onclick="openClass(${cn})">
+      const isDone = COMPLETIONS.has(cn);
+      unitsHtml += `<button class="sidebar-class-btn ${isDone?'done':''}" id="sb-cls-${cn}" onclick="openClass(${cn})">
         <span class="sidebar-class-dot"></span>${CLASS_META[cn]?.name||'Class '+cn}
       </button>`;
     });
-    html += `</div></div>`;
+    unitsHtml += `</div></div>`;
   });
-  sb.innerHTML = html;
+
+  const expanded = window.sidebarExpanded;
+  const toggleOpenCls = expanded ? ' open' : '';
+  const bodyCls       = expanded ? ' open' : '';
+
+  sb.innerHTML = ctxHtml +
+    `<div class="sidebar-curriculum-toggle${toggleOpenCls}" id="sidebar-curriculum-toggle" onclick="toggleSidebarCurriculum()">
+      <span class="sidebar-curriculum-toggle-label">Curriculum</span>
+      <span class="sidebar-curriculum-toggle-arrow">▶</span>
+    </div>
+    <div class="sidebar-curriculum-body${bodyCls}" id="sidebar-curriculum-body">
+      ${unitsHtml}
+    </div>`;
+}
+
+function toggleSidebarCurriculum() {
+  window.sidebarExpanded = !window.sidebarExpanded;
+  var toggle = document.getElementById('sidebar-curriculum-toggle');
+  var body   = document.getElementById('sidebar-curriculum-body');
+  if (toggle) toggle.classList.toggle('open', window.sidebarExpanded);
+  if (body)   body.classList.toggle('open', window.sidebarExpanded);
 }
 
 function toggleSidebarUnit(uid) {
@@ -2773,6 +2814,12 @@ function setNavActive(id) {
 
 function showDashboard() {
   if (currentMode !== 'teacher') switchMode('teacher');
+  // Collapse sidebar curriculum when returning to dashboard
+  window.sidebarExpanded = false;
+  var toggle = document.getElementById('sidebar-curriculum-toggle');
+  var body   = document.getElementById('sidebar-curriculum-body');
+  if (toggle) toggle.classList.remove('open');
+  if (body)   body.classList.remove('open');
   showView('v-dashboard');
   renderDashboard();
   setNavActive('btn-dashboard');
@@ -2852,38 +2899,60 @@ function renderDashboard() {
     }
   }
 
-  // ── Quick class access ────────────────────────────────────
+  // ── Operational quick access (recent classes + continue) ─
   var quickEl = document.getElementById('dash-quick-access');
   if (quickEl) {
-    var allowed   = teacherAllowedClasses();
-    var unitRows  = UNITS_META
-      .filter(function(u){ return u.classes.some(function(cn){ return allowed.indexOf(cn) >= 0; }); })
-      .slice(0, 4)
-      .map(function(u) {
-        var uc   = u.classes.filter(function(cn){ return allowed.indexOf(cn) >= 0; });
-        var done = uc.filter(function(cn){ return COMPLETIONS.has(cn); }).length;
-        return '<div class="quick-unit-row" onclick="openUnit(\'' + u.id + '\')">' +
-          '<span style="font-size:.9rem;flex-shrink:0;">' + u.icon + '</span>' +
+    var recentCls = getRecentClasses();
+    var html = '';
+
+    // "Continue" button — most recent class opened
+    if (recentCls.length > 0) {
+      var lastCn   = recentCls[0];
+      var lastMeta = CLASS_META[lastCn];
+      var lastUnit = UNITS_META.find(function(u){ return u.classes.indexOf(lastCn) >= 0; });
+      html +=
+        '<button class="quick-continue-btn" onclick="openClass(' + lastCn + ')">' +
+          '<span class="quick-continue-icon">▶</span>' +
           '<div style="flex:1;min-width:0;">' +
-            '<div class="quick-unit-label">' + u.title + '</div>' +
-            '<div class="quick-unit-sub">' + done + '/' + uc.length + ' reviewed</div>' +
+            '<span style="display:block;">Continue — Class ' + lastCn + '</span>' +
+            '<span class="quick-continue-sub">' +
+              (lastMeta ? lastMeta.name : '') +
+              (lastUnit ? ' · ' + lastUnit.icon + ' ' + lastUnit.title : '') +
+            '</span>' +
           '</div>' +
-          '<span style="color:var(--teal);font-size:.85rem;">›</span>' +
+        '</button>';
+    }
+
+    // Recent classes list (skip the first — already shown in continue button)
+    var recents = recentCls.slice(1, 4);
+    if (recents.length) {
+      html += '<div style="font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.35rem;">Recently Opened</div>';
+      html += recents.map(function(cn) {
+        var m = CLASS_META[cn];
+        var u = UNITS_META.find(function(u){ return u.classes.indexOf(cn) >= 0; });
+        return '<div class="quick-recent-item" onclick="openClass(' + cn + ')">' +
+          '<span class="quick-recent-num">Class ' + cn + '</span>' +
+          '<span class="quick-recent-label">' + (m ? m.name : 'Class ' + cn) + '</span>' +
+          '<span style="color:var(--teal);font-size:.8rem;">›</span>' +
         '</div>';
       }).join('');
+    }
 
-    quickEl.innerHTML =
+    // Go to class by number
+    html +=
+      '<div style="font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin:' + (recents.length || recentCls.length ? '.85rem' : '0') + ' 0 .35rem;">Go to class</div>' +
       '<div class="quick-class-form">' +
         '<input type="number" id="quick-class-input" class="quick-class-input" min="1" max="72" placeholder="Class #" ' +
           'onkeypress="if(event.key===\'Enter\'){var v=parseInt(this.value);if(v>=1&&v<=72)openClass(v);}">' +
-        '<button class="quick-class-btn" onclick="var v=parseInt(document.getElementById(\'quick-class-input\').value);if(v>=1&&v<=72)openClass(v);">Open</button>' +
-      '</div>' +
-      '<div style="font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.4rem;">Units</div>' +
-      unitRows +
-      '<button onclick="toggleSidebarUnit(\'u1\')" ' +
-        'style="margin-top:.75rem;width:100%;padding:.4rem;border:1px solid var(--border);background:none;border-radius:var(--radius-sm);cursor:pointer;font-size:.75rem;color:var(--ink-mid);">' +
-        'Browse curriculum in sidebar →' +
-      '</button>';
+        '<button class="quick-class-btn" onclick="var v=parseInt(document.getElementById(\'quick-class-input\').value);if(v>=1&&v<=72)openClass(v);">Go</button>' +
+      '</div>';
+
+    // If no recent classes at all, add a helpful nudge
+    if (!recentCls.length) {
+      html += '<p style="font-size:.78rem;color:var(--ink-light);margin-top:.5rem;line-height:1.45;">Open a class from the sidebar to start teaching. Your recent classes will appear here.</p>';
+    }
+
+    quickEl.innerHTML = html;
   }
 }
 
@@ -3000,16 +3069,48 @@ function openUnit(uid) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// RECENT CLASS TRACKING
+// ══════════════════════════════════════════════════════════════
+function trackRecentClass(cn) {
+  var key = 'su_recent_classes';
+  var list = JSON.parse(localStorage.getItem(key) || '[]');
+  list = list.filter(function(x){ return x !== cn; }); // deduplicate
+  list.unshift(cn);
+  if (list.length > 6) list = list.slice(0, 6);
+  localStorage.setItem(key, JSON.stringify(list));
+}
+function getRecentClasses() {
+  return JSON.parse(localStorage.getItem('su_recent_classes') || '[]');
+}
+
+// ══════════════════════════════════════════════════════════════
 // OPEN CLASS
 // ══════════════════════════════════════════════════════════════
 function openClass(cn) {
   currentClassNum = cn;
   currentStage = 'overview';
   saveNav();
-  // Update sidebar active state
+  // Track for recent-class operational panel
+  trackRecentClass(cn);
+  // Auto-expand sidebar curriculum so users can see the active class
+  window.sidebarExpanded = true;
+  var toggle = document.getElementById('sidebar-curriculum-toggle');
+  var body   = document.getElementById('sidebar-curriculum-body');
+  if (toggle) toggle.classList.add('open');
+  if (body)   body.classList.add('open');
+  // Update sidebar active state and auto-open the parent unit
   document.querySelectorAll('.sidebar-class-btn').forEach(b => b.classList.remove('active'));
   const sb = document.getElementById('sb-cls-'+cn);
-  if (sb) sb.classList.add('active');
+  if (sb) {
+    sb.classList.add('active');
+    // Open the parent unit if it isn't already
+    const unitEl = sb.closest('.sidebar-unit');
+    if (unitEl && !unitEl.classList.contains('open')) {
+      unitEl.classList.add('open');
+      const uhdr = unitEl.querySelector('.sidebar-unit-header');
+      if (uhdr) uhdr.classList.add('active');
+    }
+  }
   // Render
   renderClassDetail(cn);
   showView('v-class');
