@@ -294,14 +294,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .student-portal-header h2{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink);font-style:italic;}
 .student-portal-header h2 span{font-style:normal;color:var(--purple);}
 .student-portal-header p{font-size:.8rem;color:var(--ink-light);margin-top:.2rem;}
-.student-units{padding:1.5rem 2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
-.student-unit-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.1rem;cursor:pointer;transition:all .15s;}
-.student-unit-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:var(--shadow);}
-.su-icon{font-size:1.4rem;margin-bottom:.5rem;}
-.su-title{font-weight:500;font-size:.88rem;color:var(--ink);margin-bottom:.2rem;}
-.su-sub{font-size:.75rem;color:var(--ink-light);}
-.su-progress{height:4px;background:var(--border);border-radius:2px;margin-top:.75rem;}
-.su-progress-fill{height:100%;border-radius:2px;background:var(--purple);}
+.student-units{padding:1.75rem 2rem 2.25rem;}
+.su-page-header{margin-bottom:1.75rem;}
+.su-page-title{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--ink);margin-top:.85rem;line-height:1.2;font-style:italic;}
+.su-page-sub{font-size:.78rem;color:var(--ink-light);margin-top:.3rem;line-height:1.5;}
+.su-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.student-unit-card{background:#fff;border-radius:14px;border:none;padding:1.35rem 1.25rem;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 1px 4px rgba(45,45,45,.06),0 4px 16px rgba(75,0,130,.06);}
+.student-unit-card:hover{transform:translateY(-3px);box-shadow:0 6px 28px rgba(75,0,130,.15);}
+.su-icon-wrap{width:40px;height:40px;border-radius:10px;background:var(--lilac-light);display:flex;align-items:center;justify-content:center;font-size:1.15rem;margin-bottom:.85rem;flex-shrink:0;}
+.su-title{font-weight:600;font-size:.88rem;color:var(--ink);margin-bottom:.28rem;letter-spacing:-.01em;}
+.su-sub{font-size:.74rem;color:var(--ink-light);line-height:1.45;min-height:2.4em;}
+.su-progress-wrap{margin-top:.95rem;}
+.su-progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;}
+.su-progress-label{font-size:.67rem;color:var(--ink-light);}
+.su-progress{height:5px;background:rgba(45,45,45,.07);border-radius:3px;}
+.su-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--purple) 0%,var(--lilac) 100%);transition:width .3s ease;}
 
 /* ── PRODUCT & LEVEL CARDS ── */
 .student-products{padding:2.5rem 2rem;max-width:900px;margin:0 auto;}
@@ -405,11 +412,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 @media(max-width:440px){.s-hub{padding:.75rem .85rem;}}
 
 /* ── HIERARCHY BREADCRUMB ── */
-.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.45rem 0 .6rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;line-height:1;}
-.hier-crumb{cursor:pointer;color:var(--ink-light);font-size:.72rem;font-weight:400;padding:.2rem .38rem;border-radius:4px;transition:background .12s,color .12s;text-decoration:none;}
-.hier-crumb:hover{background:var(--lilac-light);color:var(--purple);}
-.hier-sep{font-size:.6rem;color:var(--ink-light);opacity:.35;padding:0 .08rem;user-select:none;pointer-events:none;}
-.hier-current{font-size:.72rem;color:var(--ink);font-weight:500;padding:.2rem .38rem;}
+.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.6rem 0 .75rem;border-bottom:1px solid var(--border);margin-bottom:0;line-height:1;}
+.hier-crumb{cursor:pointer;color:var(--ink-light);font-size:.7rem;font-weight:400;padding:.2rem .3rem;border-radius:4px;transition:color .2s ease;text-decoration:none;}
+.hier-crumb:hover{color:var(--purple);}
+.hier-sep{font-size:.68rem;color:var(--ink-light);opacity:.3;padding:0 .15rem;user-select:none;pointer-events:none;font-weight:300;}
+.hier-current{font-size:.7rem;color:var(--ink);font-weight:600;padding:.2rem .3rem;letter-spacing:.01em;}
 
 /* ── SIDEBAR LEVEL CONTEXT ── */
 .sidebar-ctx-block{background:var(--purple);border-radius:var(--radius-sm);margin:.75rem .75rem .25rem;padding:.65rem .9rem;}
@@ -450,7 +457,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
   .sidebar{display:none;}
   .dash-stats{grid-template-columns:repeat(2,1fr);}
   .overview-grid,.dash-grid{grid-template-columns:1fr;}
-  .student-units{grid-template-columns:repeat(2,1fr);}
+  .su-grid{grid-template-columns:repeat(2,1fr);}
   .profile-body{grid-template-columns:1fr;}
 }
 @media(max-width:600px){
@@ -482,7 +489,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 /* Student portal — view container paddings */
 @media(max-width:600px){
   .student-class-list,.student-class-detail{padding:1rem;}
-  .student-levels,.student-units{padding:1rem;}
+  .student-levels,.student-units{padding:1rem 1rem 1.5rem;}
+  .su-grid{grid-template-columns:1fr;}
   .student-products{padding:1rem;}
   .student-product-card{padding:1.1rem;}
   .student-level-card{padding:1rem 1.1rem;}
@@ -4195,30 +4203,47 @@ function renderStudentUnits() {
   saveNav();
   const p  = currentStudentProduct;
   const lv = currentStudentLevel;
+  const firstName = (window.CURRENT_USER && window.CURRENT_USER.name)
+    ? window.CURRENT_USER.name.split(' ')[0] : '';
+  const pageTitle = lv ? `${lv.name} &middot; Units` : 'Units';
+  const pageSub   = firstName
+    ? `Choose your next unit, ${firstName}`
+    : 'Select a unit to continue your journey';
   const crumb = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
-    <span class="hier-sep">›</span>
-    ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep">›</span>` : ''}
-    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep">›</span>` : ''}
+    <span class="hier-sep">/</span>
+    ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep">/</span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep">/</span>` : ''}
     <span class="hier-current">Units</span>
   </div>`;
-  let html = `<div class="student-units">${crumb}`;
+  let html = `<div class="student-units">
+    <div class="su-page-header">
+      ${crumb}
+      <h1 class="su-page-title">${pageTitle}</h1>
+      <p class="su-page-sub">${pageSub}</p>
+    </div>
+    <div class="su-grid">`;
   UNITS_META.forEach(u => {
     // If a level is active, only show units belonging to it
     if (lv && lv.units && lv.units.indexOf(u.id) < 0) return;
     const accessibleClasses = u.classes.filter(classAllowedForStudent);
     if (!accessibleClasses.length) return;
     const done = accessibleClasses.filter(c => COMPLETIONS.has(c)).length;
-    const pct = Math.round(done / accessibleClasses.length * 100);
+    const pct  = Math.round(done / accessibleClasses.length * 100);
     html += `<div class="student-unit-card" onclick="studentOpenUnit('${u.id}')">
-      <div class="su-icon">${u.icon}</div>
+      <div class="su-icon-wrap">${u.icon}</div>
       <div class="su-title">${u.title}</div>
       <div class="su-sub">${u.desc}</div>
-      <div class="su-progress"><div class="su-progress-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:.72rem;color:var(--ink-light);margin-top:.4rem;">${done}/${accessibleClasses.length} complete</div>
+      <div class="su-progress-wrap">
+        <div class="su-progress-row">
+          <span class="su-progress-label">${done}/${accessibleClasses.length} complete</span>
+          ${pct > 0 ? `<span class="su-progress-label">${pct}%</span>` : ''}
+        </div>
+        <div class="su-progress"><div class="su-progress-fill" style="width:${pct}%"></div></div>
+      </div>
     </div>`;
   });
-  html += '</div>';
+  html += '</div></div>';
   document.getElementById('student-view-content').innerHTML = html;
 }
 
