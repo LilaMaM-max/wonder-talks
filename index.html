@@ -435,21 +435,105 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .sci-badge{font-size:.7rem;padding:.15rem .5rem;border-radius:20px;}
 .sci-done{color:var(--teal);font-size:.8rem;}
 
+/* ── STUDENT LESSON STAGE ── */
 .student-class-detail{padding:1.5rem 2rem;}
-.student-stages-bar{display:flex;gap:0;background:#fff;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:1.25rem;}
-.student-stage-btn{flex:1;padding:.55rem .2rem;border:none;background:none;cursor:pointer;font-size:.7rem;font-weight:500;color:var(--ink-light);transition:all .15s;border-right:1px solid var(--border);text-align:center;}
-.student-stage-btn:last-child{border-right:none;}
-.student-stage-btn:hover{background:rgba(75,0,130,.07);color:var(--purple);}
-.student-stage-btn.active{background:var(--purple);color:#fff;}
-.student-stage-btn .s-icon{display:block;font-size:.95rem;margin-bottom:.1rem;}
-.student-stage-content{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;min-height:280px;}
-.reveal-btn{background:var(--cream);border:1px solid var(--border);color:var(--ink-mid);padding:.3rem .7rem;border-radius:6px;cursor:pointer;font-size:.75rem;margin-left:.5rem;}
-.vocab-student-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--border);}
-.vocab-student-item:last-child{border-bottom:none;}
-.vsi-en{font-weight:500;font-size:.88rem;flex:1;}
-.vsi-hint{font-size:.8rem;color:var(--ink-light);}
-.vsi-pt{font-size:.82rem;color:var(--teal);display:none;}
-.vsi-pt.revealed{display:block;}
+.student-stages-bar{display:flex;gap:.35rem;padding:.9rem 0 1.1rem;margin-bottom:1.25rem;overflow-x:auto;scrollbar-width:none;}
+.student-stages-bar::-webkit-scrollbar{display:none;}
+.student-stage-btn{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.5rem .9rem;border:none;border-radius:20px;background:rgba(45,45,45,.06);cursor:pointer;font-size:.7rem;font-weight:500;color:var(--ink-light);transition:all .18s;white-space:nowrap;flex-shrink:0;}
+.student-stage-btn:hover{background:var(--lilac-light);color:var(--purple);}
+.student-stage-btn.active{background:var(--purple);color:#fff;box-shadow:0 2px 8px rgba(75,0,130,.28);}
+.student-stage-btn .s-icon{font-size:1rem;}
+.student-stage-content{min-height:280px;}
+
+/* Vocab cards */
+.vs-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.25rem;}
+.vs-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(45,45,45,.06),0 3px 12px rgba(75,0,130,.05);overflow:hidden;}
+.vs-main{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;}
+.vs-num{width:22px;height:22px;border-radius:50%;background:var(--lilac-light);color:var(--purple);font-size:.64rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vs-en{font-weight:600;font-size:.88rem;color:var(--ink);flex:1;}
+.vs-pos{font-size:.67rem;color:var(--ink-light);background:rgba(45,45,45,.06);padding:.1rem .4rem;border-radius:10px;flex-shrink:0;}
+.vs-speak-btn{background:none;border:none;cursor:pointer;font-size:1.05rem;padding:.2rem .3rem;border-radius:6px;color:var(--purple);transition:background .15s;flex-shrink:0;}
+.vs-speak-btn:hover{background:var(--lilac-light);}
+.vs-reveal-btn{font-size:.7rem;padding:.24rem .55rem;border-radius:8px;border:1px solid rgba(75,0,130,.22);background:transparent;color:var(--purple);cursor:pointer;transition:all .15s;flex-shrink:0;}
+.vs-reveal-btn:hover{background:var(--lilac-light);}
+.vs-translation{display:none;padding:.45rem 1rem .6rem 3.3rem;font-size:.81rem;color:#5a3fa0;font-style:italic;border-top:1px solid rgba(75,0,130,.06);}
+.vs-translation.open{display:block;}
+.vs-note-btn{font-size:.67rem;color:var(--ink-light);background:none;border:none;cursor:pointer;padding:.15rem .35rem;margin-left:.3rem;text-decoration:underline;text-underline-offset:2px;vertical-align:middle;}
+.vs-note{display:none;padding:.45rem 1rem .65rem 3.3rem;font-size:.78rem;color:var(--ink-mid);line-height:1.55;background:rgba(245,245,247,.65);border-top:1px solid rgba(45,45,45,.05);}
+.vs-note.open{display:block;}
+
+/* Listen stage */
+.ls-context{font-size:.82rem;color:var(--ink-mid);line-height:1.6;padding:.7rem 1rem;background:var(--lilac-light);border-radius:10px;margin-bottom:1rem;border-left:3px solid var(--purple);}
+.ls-player{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(45,45,45,.06),0 3px 12px rgba(75,0,130,.05);padding:.9rem 1.1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:box-shadow .18s;}
+.ls-player:hover{box-shadow:0 4px 18px rgba(75,0,130,.12);}
+.ls-play-btn{width:36px;height:36px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;border:none;pointer-events:none;}
+.ls-info{flex:1;}
+.ls-title{font-weight:600;font-size:.85rem;color:var(--ink);}
+.ls-sub{font-size:.72rem;color:var(--ink-light);margin-top:.1rem;}
+.ls-transcript-toggle{font-size:.73rem;color:var(--purple);background:none;border:none;cursor:pointer;padding:.15rem 0;text-decoration:underline;text-underline-offset:2px;margin-top:.8rem;display:block;}
+.ls-transcript{display:none;margin-top:.55rem;background:rgba(245,245,247,.7);border-radius:10px;padding:.8rem 1rem;font-size:.8rem;line-height:1.7;color:var(--ink-mid);}
+.ls-transcript.open{display:block;}
+.ls-tline{margin-bottom:.3rem;}
+.ls-tline strong{color:var(--ink);font-weight:600;}
+.ls-questions-header{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-light);margin:1.2rem 0 .55rem;}
+
+/* Inline student questions */
+.sq-block{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(45,45,45,.06),0 3px 10px rgba(75,0,130,.04);padding:.95rem 1.1rem;margin-bottom:.6rem;}
+.sq-q{font-size:.85rem;font-weight:500;color:var(--ink);margin-bottom:.6rem;line-height:1.45;}
+.sq-opts{display:flex;flex-direction:column;gap:.38rem;}
+.sq-opt{display:flex;align-items:center;gap:.6rem;padding:.48rem .75rem;border-radius:8px;border:1px solid rgba(45,45,45,.1);background:#fafafa;cursor:pointer;font-size:.81rem;color:var(--ink);transition:all .15s;}
+.sq-opt:hover:not(.sq-locked){background:var(--lilac-light);border-color:rgba(75,0,130,.25);}
+.sq-opt.sq-correct{background:#e8f5e9;border-color:#4caf50;color:#2e7d32;}
+.sq-opt.sq-wrong{background:#fdecea;border-color:#ef5350;color:#c62828;}
+.sq-opt.sq-locked{cursor:default;}
+.sq-fill-row{display:flex;gap:.5rem;margin-top:.35rem;}
+.sq-fill-input{flex:1;border:1px solid rgba(45,45,45,.15);border-radius:8px;padding:.44rem .75rem;font-size:.83rem;outline:none;font-family:inherit;}
+.sq-fill-input:focus{border-color:var(--purple);box-shadow:0 0 0 2px rgba(75,0,130,.1);}
+.sq-check-btn{padding:.44rem .85rem;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-size:.79rem;font-weight:500;}
+.sq-feedback{font-size:.77rem;margin-top:.5rem;padding:.38rem .65rem;border-radius:6px;}
+.sq-feedback.correct{background:#e8f5e9;color:#2e7d32;}
+.sq-feedback.wrong{background:#fdecea;color:#c62828;}
+
+/* Dialogue stage */
+.ds-context{font-size:.81rem;color:var(--ink-mid);line-height:1.55;padding:.6rem .9rem;background:var(--warm-white);border-radius:10px;border-left:3px solid var(--border-mid);margin-bottom:.95rem;}
+.ds-lines{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem;}
+.ds-line{display:flex;gap:.65rem;align-items:flex-start;}
+.ds-speaker{width:68px;flex-shrink:0;text-align:right;padding-top:.52rem;}
+.ds-role{font-size:.67rem;font-weight:600;color:var(--ink-light);text-transform:uppercase;letter-spacing:.02em;}
+.ds-bubble-wrap{flex:1;display:flex;flex-direction:column;gap:.28rem;}
+.ds-bubble{background:var(--warm-white);border-radius:0 10px 10px 10px;padding:.5rem .75rem;font-size:.84rem;line-height:1.5;border:1px solid var(--border);}
+.ds-line.speaker-b .ds-bubble{background:#fff7f4;border-color:rgba(200,90,42,.15);}
+.ds-line.speaker-c .ds-bubble{background:#f0f6ff;border-color:rgba(26,79,122,.15);}
+.ds-speak-btn{align-self:flex-start;background:none;border:none;cursor:pointer;font-size:.82rem;color:var(--ink-light);padding:.1rem .3rem;border-radius:6px;transition:all .15s;line-height:1;}
+.ds-speak-btn:hover{background:var(--lilac-light);color:var(--purple);}
+.ds-prompts-header{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-light);margin:.95rem 0 .5rem;}
+.ds-prompt-card{background:var(--lilac-light);border-radius:10px;padding:.6rem .9rem;font-size:.82rem;color:var(--purple);margin-bottom:.42rem;line-height:1.45;}
+
+/* Grammar stage */
+.gr-concept{border-radius:12px;padding:.95rem 1.2rem;margin-bottom:1rem;background:linear-gradient(135deg,var(--purple) 0%,#7c3aed 100%);color:#fff;}
+.gr-concept-label{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;opacity:.72;margin-bottom:.28rem;}
+.gr-concept-point{font-family:'DM Serif Display',serif;font-size:1.2rem;line-height:1.3;}
+.gr-notes-box{background:var(--lilac-light);border-radius:10px;padding:.85rem 1.05rem;margin-bottom:1rem;border:1px solid rgba(75,0,130,.12);}
+.gr-notes-label{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin-bottom:.4rem;}
+.gr-notes-text{font-size:.83rem;color:var(--ink-mid);line-height:1.65;}
+.gr-examples-header{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-light);margin:.8rem 0 .48rem;}
+.gr-example-line{display:flex;align-items:center;gap:.6rem;padding:.5rem .75rem;background:#fff;border-radius:8px;margin-bottom:.38rem;border:1px solid rgba(45,45,45,.07);}
+.gr-example-text{font-size:.83rem;color:var(--ink);flex:1;line-height:1.45;}
+.gr-speak-btn{background:none;border:none;cursor:pointer;font-size:.88rem;color:var(--ink-light);padding:.15rem;border-radius:4px;transition:color .15s;flex-shrink:0;}
+.gr-speak-btn:hover{color:var(--purple);}
+.gr-exercises-header{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-light);margin:.95rem 0 .5rem;}
+
+/* Pronunciation stage */
+.pron-intro{font-size:.82rem;color:var(--ink-mid);line-height:1.6;margin-bottom:.9rem;}
+.pron-list{display:flex;flex-direction:column;gap:.42rem;}
+.pron-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(45,45,45,.06),0 3px 10px rgba(75,0,130,.04);display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;}
+.pron-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--lilac));color:#fff;font-size:.63rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pron-en{font-weight:600;font-size:.87rem;color:var(--ink);flex:1;}
+.pron-hint{font-size:.75rem;color:var(--ink-light);font-style:italic;}
+.pron-speak-btn{background:var(--lilac-light);border:none;cursor:pointer;font-size:.9rem;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.pron-speak-btn:hover{background:rgba(75,0,130,.15);}
+
+/* Confidence + complete */
 .confidence-card{background:var(--lilac-light);border-radius:var(--radius-sm);border:1px solid rgba(75,0,130,.15);padding:1rem 1.25rem;margin-top:1.25rem;text-align:center;}
 .confidence-card p{font-size:.85rem;color:var(--purple);font-weight:500;}
 .complete-btn{display:block;width:100%;padding:.75rem;border-radius:var(--radius-sm);background:var(--purple);color:#fff;border:none;cursor:pointer;font-size:.88rem;font-weight:500;margin-top:1.25rem;transition:background .15s;}
@@ -3517,8 +3601,8 @@ function playDialogue(el, cn, rate) {
   var iconEl = el.querySelector('.audio-icon') || el;
   if (el.dataset.playing) { _stopCurrent(); return; }
   _stopCurrent();
-  var classData = (typeof CLASSES !== 'undefined' ? CLASSES : {})[cn];
-  var lines = classData?.teacher?.dialogue?.lines || [];
+  var classData = (typeof buildClassData !== 'undefined') ? buildClassData()[cn] : (typeof COURSE !== 'undefined' ? COURSE[cn] : null);
+  var lines = classData && classData.teacher && classData.teacher.dialogue ? (classData.teacher.dialogue.lines||[]) : [];
   if (!lines.length) return;
   // Assign a voice to each unique speaker label
   var speakers = [];
@@ -4365,80 +4449,272 @@ function switchStudentStage(s) {
 
 function renderStudentStage(cn, stage, data) {
   const sd = data?.student;
+  const td = data?.teacher;
+
+  /* ── VOCAB ── */
   if (stage === 'vocab') {
-    const vocab = sd?.vocab || data?.teacher?.vocab || [];
-    if (!vocab.length) return '<p style="color:var(--ink-light);">Vocabulary loading…</p>';
+    const vocab = sd?.vocab || td?.vocab || [];
+    if (!vocab.length) return '<p style="color:var(--ink-light);padding:.5rem 0;">Vocabulary loading…</p>';
     return `<div>
-      <button onclick="toggleAllPt()" style="font-size:.75rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:6px;background:var(--cream);cursor:pointer;margin-bottom:.75rem;">Show all translations</button>
-      ${vocab.map((v,i) => `<div class="vocab-student-item">
-        <span class="vsi-en">${v.en}</span>
-        <span class="vsi-hint">${v.pos||''}</span>
-        <span class="vsi-pt" id="vsi-pt-${cn}-${i}">${v.pt||v.hint||''}</span>
-        <button class="reveal-btn" onclick="revealPt(${cn},${i})">Show</button>
-      </div>`).join('')}
+      <p style="font-size:.8rem;color:var(--ink-mid);margin-bottom:.85rem;line-height:1.55;">Tap <strong>🔊</strong> to hear pronunciation. Use <em>Show</em> to reveal meaning. Expand notes for extra context.</p>
+      <div style="margin-bottom:.8rem;">
+        <button onclick="vsRevealAll()" style="font-size:.71rem;padding:.28rem .65rem;border:1px solid rgba(75,0,130,.22);border-radius:8px;background:transparent;color:var(--purple);cursor:pointer;">Show all translations</button>
+      </div>
+      <div class="vs-list">
+        ${vocab.map((v,i) => {
+          const translation = v.pt || v.hint || '';
+          const note = v.note || '';
+          const safeEn = v.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          return `<div class="vs-card">
+            <div class="vs-main">
+              <span class="vs-num">${i+1}</span>
+              <span class="vs-en">${v.en}</span>
+              ${v.pos ? `<span class="vs-pos">${v.pos}</span>` : ''}
+              <button class="vs-speak-btn" onclick="speakWord('${safeEn}')" title="Pronounce">🔊</button>
+              ${translation ? `<button class="vs-reveal-btn" id="vs-rbtn-${cn}-${i}" onclick="vsReveal(${cn},${i})">Show</button>` : ''}
+            </div>
+            ${translation ? `<div class="vs-translation" id="vs-tr-${cn}-${i}">${translation}${note ? `<button class="vs-note-btn" onclick="vsNote(${cn},${i})">note ▾</button>` : ''}</div>` : ''}
+            ${note ? `<div class="vs-note" id="vs-note-${cn}-${i}">📝 ${note}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
     </div>`;
   }
+
+  /* ── LISTEN ── */
   if (stage === 'listen') {
-    const dlText = (data?.teacher?.dialogue?.lines||[]).map(l=>(l.role||l.sp)+': '+l.en).join('. ');
+    const warmup = sd?.warmup || 'Listen carefully and follow along with the dialogue.';
+    const lines = td?.dialogue?.lines || [];
+    const transcript = lines.map(l => `<div class="ls-tline"><strong>${l.role||l.sp}:</strong> ${l.en}</div>`).join('');
+    const listeningQs = (sd?.exercises||[]).filter(e => e.cat==='listening'||e.cat==='comprehension');
     return `<div>
-      <p style="font-size:.85rem;color:var(--ink-mid);margin-bottom:1rem;">${sd?.warmup||'Listen to the audio and follow along.'}</p>
-      <div class="ov-card" onclick="playDialogue(this,${cn},1)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
-        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Dialogue — Class ${cn}</div><div style="font-size:.75rem;color:var(--ink-light);">Natural speed · two voices</div></div>
+      <div class="ls-context">${warmup}</div>
+      <div class="ls-player" onclick="playDialogue(this,${cn},1)">
+        <button class="ls-play-btn"><span class="audio-icon">▶</span></button>
+        <div class="ls-info">
+          <div class="ls-title">Full Dialogue — Natural Speed</div>
+          <div class="ls-sub">Two voices · Class ${cn}</div>
+        </div>
       </div>
-      <div class="ov-card" onclick="playDialogue(this,${cn},0.7)" style="cursor:pointer;display:flex;align-items:center;gap:1rem;">
-        <span class="audio-icon" style="font-size:1.5rem;">▶️</span><div><div style="font-weight:500;font-size:.88rem;">Slow version</div><div style="font-size:.75rem;color:var(--ink-light);">Clear pronunciation</div></div>
+      <div class="ls-player" onclick="playDialogue(this,${cn},0.72)">
+        <button class="ls-play-btn"><span class="audio-icon">▶</span></button>
+        <div class="ls-info">
+          <div class="ls-title">Slow Version</div>
+          <div class="ls-sub">Clearer pronunciation · reduced speed</div>
+        </div>
       </div>
+      ${transcript ? `<button class="ls-transcript-toggle" onclick="lsToggleTranscript()">Show transcript ▾</button>
+      <div class="ls-transcript" id="ls-transcript-box">${transcript}</div>` : ''}
+      ${listeningQs.length ? `<div class="ls-questions-header">Comprehension Questions</div>
+        ${listeningQs.map((q,qi) => renderStudentQuestion(q, `ls-${cn}-${qi}`)).join('')}` : ''}
     </div>`;
   }
+
+  /* ── DIALOGUE ── */
   if (stage === 'dialogue') {
-    const d = data?.teacher?.dialogue;
+    const d = td?.dialogue;
     if (!d) return '<p style="color:var(--ink-light);">Dialogue loading…</p>';
-    const speakerClass = s => s==='B'?'speaker-b':s==='C'?'speaker-c':'speaker-a';
+    const spClass = s => s==='B'?'speaker-b':s==='C'?'speaker-c':'speaker-a';
+    const prompt = sd?.dialogue_prompt || 'Read the dialogue aloud. Practice each line — focus on clarity and natural rhythm.';
     return `<div>
-      <p style="font-size:.82rem;color:var(--ink-mid);margin-bottom:.75rem;">${sd?.dialogue_prompt||'Read the dialogue aloud. Practice your lines.'}</p>
-      <div class="dialogue-context">${d.context||''}</div>
-      <div class="dialogue-lines">
-        ${(d.lines||[]).map(l=>`<div class="dl-line ${speakerClass(l.sp)}">
-          <div class="dl-speaker"><div class="dl-role">${l.role||l.sp}</div></div>
-          <div class="dl-bubble">${l.en}</div>
-        </div>`).join('')}
+      <p style="font-size:.8rem;color:var(--ink-mid);margin-bottom:.85rem;line-height:1.5;">${prompt}</p>
+      ${d.context ? `<div class="ds-context">${d.context}</div>` : ''}
+      <div class="ds-lines">
+        ${(d.lines||[]).map(l => {
+          const safeEn = l.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          return `<div class="ds-line ${spClass(l.sp)}">
+            <div class="ds-speaker"><div class="ds-role">${l.role||l.sp}</div></div>
+            <div class="ds-bubble-wrap">
+              <div class="ds-bubble">${l.en}</div>
+              <button class="ds-speak-btn" onclick="speakLine('${safeEn}',${l.sp==='B'||l.sp==='b'?1:0})" title="Hear this line">🔊</button>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
-      ${(sd?.speaking_prompts||[]).length?`<div style="margin-top:1rem;">
-        <div style="font-size:.75rem;font-weight:500;text-transform:uppercase;color:var(--ink-light);margin-bottom:.5rem;">Speaking Prompts</div>
-        ${sd.speaking_prompts.map((p,i)=>`<div class="ov-card" style="margin-bottom:.5rem;font-size:.84rem;">💬 ${p}</div>`).join('')}
-      </div>`:''}
+      ${(sd?.speaking_prompts||[]).length ? `<div class="ds-prompts-header">💬 Speaking Prompts</div>
+        ${sd.speaking_prompts.map(p => `<div class="ds-prompt-card">${p}</div>`).join('')}` : ''}
     </div>`;
   }
+
+  /* ── GRAMMAR ── */
   if (stage === 'grammar') {
+    const point = data?.grammar?.point || 'Grammar Focus';
+    const notes = sd?.grammar_tip || td?.grammar_notes || '';
+    const examples = (td?.dialogue?.lines||[]).slice(0,5);
+    const grammarQs = (sd?.exercises||[]).filter(e => e.cat==='grammar');
     return `<div>
-      <div class="grammar-stage-box">
-        <div class="grammar-stage-point">${data?.grammar?.point||'Grammar point'}</div>
-        <div class="grammar-stage-notes">${sd?.grammar_tip||data?.teacher?.grammar_notes||''}</div>
+      <div class="gr-concept">
+        <div class="gr-concept-label">Grammar Focus</div>
+        <div class="gr-concept-point">${point}</div>
       </div>
+      ${notes ? `<div class="gr-notes-box">
+        <div class="gr-notes-label">How it works</div>
+        <div class="gr-notes-text">${notes}</div>
+      </div>` : ''}
+      ${examples.length ? `<div class="gr-examples-header">See it in the dialogue</div>
+        ${examples.map(l => {
+          const safeEn = l.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          return `<div class="gr-example-line">
+            <span class="gr-example-text"><strong>${l.role||l.sp}:</strong> ${l.en}</span>
+            <button class="gr-speak-btn" onclick="speakLine('${safeEn}',${l.sp==='B'||l.sp==='b'?1:0})" title="Hear">🔊</button>
+          </div>`;
+        }).join('')}` : ''}
+      ${grammarQs.length ? `<div class="gr-exercises-header">Grammar Practice</div>
+        ${grammarQs.map((q,qi) => renderStudentQuestion(q, `gr-${cn}-${qi}`)).join('')}` : ''}
     </div>`;
   }
+
+  /* ── EXERCISES ── */
   if (stage === 'exercises') {
     return renderExercises(data, 'student', cn);
   }
+
+  /* ── PRONUNCIATION ── */
   if (stage === 'pronunciation') {
-    const vocab = sd?.vocab || data?.teacher?.vocab || [];
+    const vocab = sd?.vocab || td?.vocab || [];
     return `<div>
-      <p style="font-size:.84rem;color:var(--ink-mid);margin-bottom:1rem;">Listen and repeat each word. Pay attention to stress and sounds.</p>
-      ${vocab.slice(0,6).map(v => `<div class="ov-card" style="margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-weight:500;font-size:.88rem;">${v.en}</span>
-        <button onclick="speakWord('${v.en.replace(/'/g,"\\'")}')" style="background:none;border:none;cursor:pointer;font-size:1.2rem;" title="Pronounce">🔊</button>
-      </div>`).join('')}
+      <p class="pron-intro">Listen and repeat each word. Focus on stress, rhythm, and clear sounds. Tap 🔊 after hearing each word to repeat it yourself.</p>
+      <div class="pron-list">
+        ${vocab.map((v,i) => {
+          const safeEn = v.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          const hint = v.hint || v.pt || '';
+          return `<div class="pron-card">
+            <span class="pron-num">${i+1}</span>
+            <span class="pron-en">${v.en}</span>
+            ${hint ? `<span class="pron-hint">${hint}</span>` : ''}
+            <button class="pron-speak-btn" onclick="speakWord('${safeEn}')" title="Pronounce">🔊</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+/* ── VOCAB helpers ── */
+function vsReveal(cn, i) {
+  const tr = document.getElementById('vs-tr-'+cn+'-'+i);
+  const btn = document.getElementById('vs-rbtn-'+cn+'-'+i);
+  if (tr) tr.classList.add('open');
+  if (btn) btn.style.display = 'none';
+}
+function vsNote(cn, i) {
+  const el = document.getElementById('vs-note-'+cn+'-'+i);
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  // update note button text via parent
+  const tr = document.getElementById('vs-tr-'+cn+'-'+i);
+  if (tr) {
+    const nb = tr.querySelector('.vs-note-btn');
+    if (nb) nb.textContent = open ? 'note ▴' : 'note ▾';
+  }
+}
+function vsRevealAll() {
+  document.querySelectorAll('.vs-translation').forEach(function(el){ el.classList.add('open'); });
+  document.querySelectorAll('.vs-reveal-btn').forEach(function(el){ el.style.display='none'; });
+}
+
+/* ── LISTEN helpers ── */
+function lsToggleTranscript() {
+  const box = document.getElementById('ls-transcript-box');
+  const btn = document.querySelector('.ls-transcript-toggle');
+  if (!box) return;
+  const open = box.classList.toggle('open');
+  if (btn) btn.textContent = open ? 'Hide transcript ▴' : 'Show transcript ▾';
+}
+
+/* ── LINE-LEVEL SPEAK ── */
+function speakLine(text, useMale) {
+  if (!window.speechSynthesis) return;
+  _stopCurrent();
+  var voices = _getEnVoices();
+  var voice = useMale ? (voices.male || voices.female) : (voices.female || voices.male);
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.92;
+  if (voice) u.voice = voice;
+  if (window.speechSynthesis.getVoices().length) {
+    window.speechSynthesis.speak(u);
+  } else {
+    window.speechSynthesis.onvoiceschanged = function() {
+      voice = useMale ? (_getEnVoices().male||_getEnVoices().female) : (_getEnVoices().female||_getEnVoices().male);
+      if (voice) u.voice = voice;
+      window.speechSynthesis.speak(u);
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }
+}
+
+/* ── INLINE STUDENT QUESTIONS ── */
+function renderStudentQuestion(q, uid) {
+  if (!q) return '';
+  if (q.type === 'mc') {
+    const correctIdx = q.ans; // numeric index
+    return `<div class="sq-block">
+      <div class="sq-q">${q.q}</div>
+      <div class="sq-opts">
+        ${(q.opts||[]).map((opt,oi) => `<div class="sq-opt" id="sq-opt-${uid}-${oi}" onclick="sqMcAnswer('${uid}',${oi},${correctIdx},'${(q.expl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
+          <span>${opt}</span>
+        </div>`).join('')}
+      </div>
+      <div class="sq-feedback" id="sq-fb-${uid}" style="display:none;"></div>
+    </div>`;
+  }
+  if (q.type === 'fill') {
+    const safeans = (q.ans||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="sq-block">
+      <div class="sq-q">${q.q}</div>
+      <div class="sq-fill-row">
+        <input class="sq-fill-input" id="sq-fill-${uid}" placeholder="Type your answer…" onkeydown="if(event.key==='Enter')sqCheckFill('${uid}','${safeans}')">
+        <button class="sq-check-btn" onclick="sqCheckFill('${uid}','${safeans}')">Check</button>
+      </div>
+      <div class="sq-feedback" id="sq-fb-${uid}" style="display:none;"></div>
+    </div>`;
+  }
+  if (q.type === 'tf') {
+    const correctIdx = q.ans === false ? 1 : 0; // 0=True, 1=False
+    return `<div class="sq-block">
+      <div class="sq-q">${q.q}</div>
+      <div class="sq-opts">
+        <div class="sq-opt" id="sq-opt-${uid}-0" onclick="sqMcAnswer('${uid}',0,${correctIdx},'${(q.expl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"><span>True</span></div>
+        <div class="sq-opt" id="sq-opt-${uid}-1" onclick="sqMcAnswer('${uid}',1,${correctIdx},'${(q.expl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"><span>False</span></div>
+      </div>
+      <div class="sq-feedback" id="sq-fb-${uid}" style="display:none;"></div>
     </div>`;
   }
   return '';
 }
-
-function revealPt(cn, i) {
-  const el = document.getElementById(`vsi-pt-${cn}-${i}`);
-  if (el) el.classList.add('revealed');
+function sqMcAnswer(uid, selectedIdx, correctIdx, expl) {
+  const firstOpt = document.getElementById('sq-opt-'+uid+'-0');
+  if (firstOpt && firstOpt.classList.contains('sq-locked')) return;
+  document.querySelectorAll('[id^="sq-opt-'+uid+'-"]').forEach(function(el){ el.classList.add('sq-locked'); });
+  const sel = document.getElementById('sq-opt-'+uid+'-'+selectedIdx);
+  const cor = document.getElementById('sq-opt-'+uid+'-'+correctIdx);
+  if (sel) sel.classList.add(selectedIdx===correctIdx ? 'sq-correct' : 'sq-wrong');
+  if (cor && selectedIdx !== correctIdx) cor.classList.add('sq-correct');
+  const fb = document.getElementById('sq-fb-'+uid);
+  if (fb) {
+    fb.style.display = 'block';
+    const ok = selectedIdx === correctIdx;
+    fb.className = 'sq-feedback '+(ok?'correct':'wrong');
+    fb.textContent = ok ? '✓ Correct!' + (expl?' — '+expl:'') : '✗ Not quite. ' + (expl||'');
+  }
 }
-function toggleAllPt() {
-  document.querySelectorAll('.vsi-pt').forEach(el => el.classList.add('revealed'));
+function sqCheckFill(uid, ans) {
+  const input = document.getElementById('sq-fill-'+uid);
+  if (!input || input.disabled) return;
+  const val = input.value.trim().toLowerCase().replace(/[^a-z0-9\-' ]/g,'');
+  const correct = (ans||'').toLowerCase().replace(/[^a-z0-9\-' ]/g,'');
+  const ok = val === correct;
+  input.disabled = true;
+  input.style.borderColor = ok ? '#4caf50' : '#ef5350';
+  const fb = document.getElementById('sq-fb-'+uid);
+  if (fb) {
+    fb.style.display = 'block';
+    fb.className = 'sq-feedback '+(ok?'correct':'wrong');
+    fb.textContent = ok ? '✓ Correct!' : '✗ Answer: '+ans;
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
