@@ -405,11 +405,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 @media(max-width:440px){.s-hub{padding:.75rem .85rem;}}
 
 /* ── HIERARCHY BREADCRUMB ── */
-.hier-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--ink-light);margin-bottom:1.25rem;flex-wrap:wrap;}
-.hier-crumb{cursor:pointer;color:var(--teal);text-decoration:none;}
-.hier-crumb:hover{text-decoration:underline;}
-.hier-sep{opacity:.4;}
-.hier-current{color:var(--ink-mid);font-weight:500;}
+.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.45rem 0 .6rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;line-height:1;}
+.hier-crumb{cursor:pointer;color:var(--ink-light);font-size:.72rem;font-weight:400;padding:.2rem .38rem;border-radius:4px;transition:background .12s,color .12s;text-decoration:none;}
+.hier-crumb:hover{background:var(--lilac-light);color:var(--purple);}
+.hier-sep{font-size:.6rem;color:var(--ink-light);opacity:.35;padding:0 .08rem;user-select:none;pointer-events:none;}
+.hier-current{font-size:.72rem;color:var(--ink);font-weight:500;padding:.2rem .38rem;}
 
 /* ── SIDEBAR LEVEL CONTEXT ── */
 .sidebar-ctx-block{background:var(--purple);border-radius:var(--radius-sm);margin:.75rem .75rem .25rem;padding:.65rem .9rem;}
@@ -3282,7 +3282,7 @@ function renderClassDetail(cn) {
   const prodMeta  = PRODUCTS_META.find(p => userProds.includes(p.id));
   const levelMeta = prodMeta ? LEVELS_META.find(l => l.product === prodMeta.id && l.active) : null;
 
-  const breadcrumbHTML = `<div class="hier-breadcrumb" style="margin-bottom:.75rem;">
+  const breadcrumbHTML = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="showDashboard()">Home</span>
     ${prodMeta  ? `<span class="hier-sep">›</span><span class="hier-crumb" onclick="showDashboard()">${prodMeta.name}</span>` : ''}
     ${levelMeta ? `<span class="hier-sep">›</span><span class="hier-crumb" onclick="showDashboard()">${levelMeta.name} ${levelMeta.title}</span>` : ''}
@@ -3985,7 +3985,7 @@ function renderStudentCourses() {
   currentStudentMode = 'courselist';
   saveNav();
   var html = '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+    '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">My Courses</span>' +
     '</div>' +
@@ -4026,7 +4026,7 @@ function renderStudentSchedule() {
   var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
   var html =
     '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+    '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">Upcoming Classes</span>' +
     '</div>' +
@@ -4060,7 +4060,7 @@ function renderStudentNotices() {
   saveNav();
   document.getElementById('student-view-content').innerHTML =
     '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+    '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">Notice Board</span>' +
     '</div>' +
@@ -4123,7 +4123,7 @@ function renderStudentProgress() {
 
   document.getElementById('student-view-content').innerHTML =
     '<div class="s-detail-page">' +
-    '<div class="hier-breadcrumb" style="margin-bottom:1.5rem;">' +
+    '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep">›</span><span class="hier-current">My Progress</span>' +
     '</div>' +
