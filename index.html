@@ -21,6 +21,7 @@
   --blue:var(--purple);           --blue-light:var(--purple-light);
   --green:#2D7A3A;                --green-light:#D4EDD8;
   --border:rgba(45,45,45,.12);    --border-mid:rgba(45,45,45,.2);
+  --crumb-muted:#8E8A9F;
   --shadow:0 2px 16px rgba(75,0,130,.08); --shadow-md:0 4px 24px rgba(75,0,130,.14);
   --radius:12px; --radius-sm:8px;
 }
@@ -412,11 +413,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 @media(max-width:440px){.s-hub{padding:.75rem .85rem;}}
 
 /* ── HIERARCHY BREADCRUMB ── */
-.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.65rem 0 .8rem;border-bottom:1px solid var(--border);margin-bottom:0;line-height:1;}
-.hier-crumb{cursor:pointer;color:var(--ink-light);font-size:.82rem;font-weight:400;padding:.18rem .25rem;border-radius:4px;transition:color .2s ease;text-decoration:none;}
+.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.75rem 0 .9rem;border-bottom:1px solid var(--border);margin-bottom:0;line-height:1;}
+.hier-crumb{cursor:pointer;color:var(--crumb-muted);font-size:1rem;font-weight:400;padding:.18rem .1rem;border-radius:4px;transition:color .2s ease;text-decoration:none;}
 .hier-crumb:hover{color:var(--purple);}
-.hier-sep{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 4px;color:var(--ink-light);opacity:.4;user-select:none;pointer-events:none;}
-.hier-current{font-size:.82rem;color:var(--ink);font-weight:600;padding:.18rem .25rem;letter-spacing:.01em;}
+.hier-sep{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 12px;padding:0;color:var(--crumb-muted);opacity:.7;user-select:none;pointer-events:none;}
+.hier-current{font-size:1rem;color:#2D2D2D;font-weight:700;padding:.18rem .1rem;letter-spacing:.01em;}
 
 /* ── SIDEBAR LEVEL CONTEXT ── */
 .sidebar-ctx-block{background:var(--purple);border-radius:var(--radius-sm);margin:.75rem .75rem .25rem;padding:.65rem .9rem;}
@@ -3292,10 +3293,10 @@ function renderClassDetail(cn) {
 
   const breadcrumbHTML = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="showDashboard()">Home</span>
-    ${prodMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${prodMeta.name}</span>` : ''}
-    ${levelMeta ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${levelMeta.name} ${levelMeta.title}</span>` : ''}
-    ${unitMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="openUnit('${unitMeta.id}')">${unitMeta.icon} ${unitMeta.title}</span>` : ''}
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Class ${cn}</span>
+    ${prodMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${prodMeta.name}</span>` : ''}
+    ${levelMeta ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${levelMeta.name} ${levelMeta.title}</span>` : ''}
+    ${unitMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="openUnit('${unitMeta.id}')">${unitMeta.icon} ${unitMeta.title}</span>` : ''}
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Class ${cn}</span>
   </div>`;
 
   document.getElementById('class-detail-content').innerHTML = `
@@ -3995,7 +3996,7 @@ function renderStudentCourses() {
   var html = '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Courses</span>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Courses</span>' +
     '</div>' +
     '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Courses</div>';
   if (!pids.length) {
@@ -4036,7 +4037,7 @@ function renderStudentSchedule() {
     '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Upcoming Classes</span>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Upcoming Classes</span>' +
     '</div>' +
     '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Upcoming Classes</div>';
   if (nextCn) {
@@ -4070,7 +4071,7 @@ function renderStudentNotices() {
     '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Notice Board</span>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Notice Board</span>' +
     '</div>' +
     '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">Notice Board</div>' +
     '<div class="s-hub-notice-item" style="margin-bottom:.75rem;">' +
@@ -4133,7 +4134,7 @@ function renderStudentProgress() {
     '<div class="s-detail-page">' +
     '<div class="hier-breadcrumb">' +
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
-      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Progress</span>' +
+      '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">My Progress</span>' +
     '</div>' +
     '<div style="font-family:\'DM Serif Display\',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--ink);">My Progress</div>' +
     '<div class="s-hub-stats-row" style="margin-bottom:1.5rem;">' +
@@ -4163,7 +4164,7 @@ function renderStudentLevels() {
   if (!p) { renderStudentProducts(); return; }
   const crumb = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     <span class="hier-current">${p.name}</span>
   </div>`;
   const allowedLevelIds = studentAllowedLevels(p.id);
@@ -4211,9 +4212,9 @@ function renderStudentUnits() {
     : 'Select a unit to continue your journey';
   const crumb = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-    ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     <span class="hier-current">Units</span>
   </div>`;
   let html = `<div class="student-units">
@@ -4261,11 +4262,11 @@ function renderStudentClasses() {
   const lv = currentStudentLevel;
   const crumb = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     <span class="hier-crumb" onclick="renderStudentUnits()">Units</span>
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     <span class="hier-current">${u.icon} ${u.title}</span>
   </div>`;
   let html = `<div class="student-class-list">${crumb}`;
@@ -4303,10 +4304,10 @@ function renderStudentClass() {
 
   const crumb = `<div class="hier-breadcrumb">
     <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    ${u  ? `<span class="hier-crumb" onclick="renderStudentUnits()">Units</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="renderStudentClasses()">${u.icon} ${u.title}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
+    ${u  ? `<span class="hier-crumb" onclick="renderStudentUnits()">Units</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="renderStudentClasses()">${u.icon} ${u.title}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     <span class="hier-current">Class ${cn}</span>
   </div>`;
 
