@@ -2769,9 +2769,9 @@ function renderDashboard() {
                                .map(function(l){ return l.name + ' ' + l.title; }).join(', ');
       ctxParts.push(pm.name + (lvNames ? ' · ' + lvNames : ''));
     });
-    var allowedCls = teacherAllowedClasses();
-    var unitCount  = UNITS_META.filter(function(u){ return u.classes.some(function(cn){ return allowedCls.indexOf(cn) >= 0; }); }).length;
-    descEl.textContent = (ctxParts.length ? ctxParts.join(' · ') + ' · ' : '') + unitCount + ' units · ' + allowedCls.length + ' classes';
+    var heroCls    = teacherAllowedClasses();
+    var unitCount  = UNITS_META.filter(function(u){ return u.classes.some(function(cn){ return heroCls.indexOf(cn) >= 0; }); }).length;
+    descEl.textContent = (ctxParts.length ? ctxParts.join(' · ') + ' · ' : '') + unitCount + ' units · ' + heroCls.length + ' classes';
   }
   document.getElementById('stat-done').textContent = COMPLETIONS.size;
   // Units grid — filtered by teacher's allowed classes
