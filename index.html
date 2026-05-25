@@ -25,6 +25,7 @@
   --shadow:0 2px 16px rgba(75,0,130,.08); --shadow-md:0 4px 24px rgba(75,0,130,.14);
   --radius:12px; --radius-sm:8px;
   --sb-w:260px;
+  --nav-h:60px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;}
@@ -39,7 +40,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 ::-webkit-scrollbar-thumb:hover{background:rgba(142,138,159,.72);transition:background .2s;}
 
 /* ── HEADER ── */
-.site-header{background:var(--purple);color:#fff;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;min-height:60px;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;gap:.25rem;}
+.site-header{background:var(--purple);color:#fff;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:var(--nav-h,60px);overflow:hidden;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:nowrap;gap:.25rem;transition:height .22s cubic-bezier(.4,0,.2,1);}
 .site-header svg{filter:brightness(0) invert(1);}
 .logo-wonder{font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.55);line-height:1;}
 .logo-product{font-family:'DM Serif Display',serif;font-size:1rem;font-style:normal;color:#fff;line-height:1.2;letter-spacing:.01em;}
@@ -53,8 +54,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 @media(max-width:480px){.nav-divider{display:none;}}
 
 /* ── SIDEBAR + MAIN LAYOUT ── */
-.app-layout{display:flex;min-height:calc(100vh - 60px);}
-.sidebar{width:var(--sb-w,260px);flex-shrink:0;background:var(--cream);border-right:1px solid var(--border);overflow:hidden;position:sticky;top:60px;height:calc(100vh - 60px);transition:width .22s cubic-bezier(.4,0,.2,1);}
+.app-layout{display:flex;min-height:calc(100vh - var(--nav-h,60px));}
+.sidebar{width:var(--sb-w,260px);flex-shrink:0;background:var(--cream);border-right:1px solid var(--border);overflow:hidden;position:sticky;top:var(--nav-h,60px);height:calc(100vh - var(--nav-h,60px));transition:width .22s cubic-bezier(.4,0,.2,1),top .22s cubic-bezier(.4,0,.2,1),height .22s cubic-bezier(.4,0,.2,1);}
 .sidebar-inner{width:260px;height:100%;overflow-y:auto;}
 .main-area{flex:1;overflow-y:auto;min-width:0;}
 
@@ -78,7 +79,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .sidebar-class-btn.active .sidebar-class-dot{background:var(--purple);}
 
 /* ── SIDEBAR COLLAPSE TOGGLE ── */
-.sb-toggle{position:fixed;left:var(--sb-w,260px);top:88px;width:20px;height:48px;background:#4B0082;border:none;border-radius:0 8px 8px 0;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:600;box-shadow:2px 1px 6px rgba(75,0,130,.35);transition:left .22s cubic-bezier(.4,0,.2,1),background .15s;color:#fff;padding:0;}
+.sb-toggle{position:fixed;left:var(--sb-w,260px);top:calc(var(--nav-h,60px) + 28px);width:20px;height:48px;background:#4B0082;border:none;border-radius:0 8px 8px 0;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:600;box-shadow:2px 1px 6px rgba(75,0,130,.35);transition:left .22s cubic-bezier(.4,0,.2,1),top .22s cubic-bezier(.4,0,.2,1),background .15s;color:#fff;padding:0;}
 .sb-toggle:hover{background:#320057;}
 .sb-chev{display:flex;align-items:center;justify-content:center;transition:transform .22s cubic-bezier(.4,0,.2,1);}
 .sb-toggle.collapsed .sb-chev{transform:rotate(180deg);}
@@ -3049,6 +3050,7 @@ function buildSidebar() {
       ${unitsHtml}
     </div></div>`;
   if (typeof _applySbState === 'function') _applySbState();
+  if (typeof _applyNavState === 'function') _applyNavState();
 }
 
 function toggleSidebarCurriculum() {
@@ -3075,6 +3077,10 @@ function _wrapCrumb(inner) {
 function toggleCrumb() {
   _crumbCollapsed = !_crumbCollapsed;
   try{localStorage.setItem('crumb_col', _crumbCollapsed?'1':'0');}catch(e){}
+  _applyNavState();
+}
+function _applyNavState() {
+  document.documentElement.style.setProperty('--nav-h', _crumbCollapsed ? '0px' : '60px');
   document.querySelectorAll('.hier-breadcrumb').forEach(function(el){
     el.classList.toggle('crumb-hidden', _crumbCollapsed);
   });
