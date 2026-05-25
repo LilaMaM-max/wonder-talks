@@ -24,6 +24,7 @@
   --crumb-muted:#8E8A9F;
   --shadow:0 2px 16px rgba(75,0,130,.08); --shadow-md:0 4px 24px rgba(75,0,130,.14);
   --radius:12px; --radius-sm:8px;
+  --sb-w:260px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;}
@@ -44,7 +45,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 
 /* ── SIDEBAR + MAIN LAYOUT ── */
 .app-layout{display:flex;min-height:calc(100vh - 60px);}
-.sidebar{width:260px;flex-shrink:0;background:var(--cream);border-right:1px solid var(--border);overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);}
+.sidebar{width:var(--sb-w,260px);flex-shrink:0;background:var(--cream);border-right:1px solid var(--border);overflow:hidden;position:sticky;top:60px;height:calc(100vh - 60px);transition:width .22s cubic-bezier(.4,0,.2,1);}
+.sidebar-inner{width:260px;height:100%;overflow-y:auto;}
 .main-area{flex:1;overflow-y:auto;min-width:0;}
 
 /* ── SIDEBAR UNITS ── */
@@ -65,6 +67,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 .sidebar-class-dot{width:6px;height:6px;border-radius:50%;background:var(--border-mid);flex-shrink:0;}
 .sidebar-class-btn.done .sidebar-class-dot{background:var(--teal);}
 .sidebar-class-btn.active .sidebar-class-dot{background:var(--purple);}
+
+/* ── SIDEBAR COLLAPSE TOGGLE ── */
+.sb-toggle{position:fixed;left:var(--sb-w,260px);top:88px;width:20px;height:48px;background:#fff;border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:600;box-shadow:2px 1px 6px rgba(45,45,45,.1);transition:left .22s cubic-bezier(.4,0,.2,1),background .15s;color:var(--ink-light);padding:0;}
+.sb-toggle:hover{background:var(--lilac-light);color:var(--purple);}
+.sb-chev{display:flex;align-items:center;justify-content:center;transition:transform .22s cubic-bezier(.4,0,.2,1);}
+.sb-toggle.collapsed .sb-chev{transform:rotate(180deg);}
+#mode-teacher .sb-toggle{display:flex;}
 
 /* ── VIEWS ── */
 .view{display:none;} .view.active{display:block;}
@@ -551,6 +560,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .sidebar{display:none;}
+  .sb-toggle{display:none!important;}
   .dash-stats{grid-template-columns:repeat(2,1fr);}
   .overview-grid,.dash-grid{grid-template-columns:1fr;}
   .su-grid{grid-template-columns:repeat(2,1fr);}
@@ -1927,6 +1937,11 @@ z"/></symbol></svg>
       <div class="sidebar-section">Units & Classes</div>
     </aside>
 
+    <!-- SIDEBAR COLLAPSE TAB -->
+    <button class="sb-toggle" id="sb-toggle" onclick="toggleSidebar()" title="Collapse / expand sidebar" aria-label="Toggle sidebar">
+      <span class="sb-chev"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></span>
+    </button>
+
     <!-- MAIN -->
     <main class="main-area">
 
@@ -3008,14 +3023,15 @@ function buildSidebar() {
   const toggleOpenCls = expanded ? ' open' : '';
   const bodyCls       = expanded ? ' open' : '';
 
-  sb.innerHTML = ctxHtml +
+  sb.innerHTML = `<div class="sidebar-inner">` + ctxHtml +
     `<div class="sidebar-curriculum-toggle${toggleOpenCls}" id="sidebar-curriculum-toggle" onclick="toggleSidebarCurriculum()">
       <span class="sidebar-curriculum-toggle-label">Curriculum</span>
       <span class="sidebar-curriculum-toggle-arrow">▶</span>
     </div>
     <div class="sidebar-curriculum-body${bodyCls}" id="sidebar-curriculum-body">
       ${unitsHtml}
-    </div>`;
+    </div></div>`;
+  if (typeof _applySbState === 'function') _applySbState();
 }
 
 function toggleSidebarCurriculum() {
@@ -3030,6 +3046,20 @@ function toggleSidebarUnit(uid) {
   const el = document.getElementById('sb-'+uid);
   el.classList.toggle('open');
   el.querySelector('.sidebar-unit-header').classList.toggle('active');
+}
+
+/* ── SIDEBAR COLLAPSE ── */
+var _sbCollapsed = (function(){ try{ return localStorage.getItem('sb_col')==='1'; }catch(e){ return false; } })();
+
+function toggleSidebar() {
+  _sbCollapsed = !_sbCollapsed;
+  try{ localStorage.setItem('sb_col', _sbCollapsed ? '1' : '0'); }catch(e){}
+  _applySbState();
+}
+function _applySbState() {
+  document.documentElement.style.setProperty('--sb-w', _sbCollapsed ? '0px' : '260px');
+  var btn = document.getElementById('sb-toggle');
+  if (btn) btn.classList.toggle('collapsed', _sbCollapsed);
 }
 
 // ══════════════════════════════════════════════════════════════
