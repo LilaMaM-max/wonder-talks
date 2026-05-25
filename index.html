@@ -434,11 +434,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--i
 @media(max-width:440px){.s-hub{padding:.75rem .85rem;}}
 
 /* ── HIERARCHY BREADCRUMB ── */
-.hier-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding:.75rem 0 .9rem;border-bottom:1px solid var(--border);margin-bottom:0;line-height:1;}
+.hier-breadcrumb{display:flex;align-items:center;flex-wrap:nowrap;gap:0;padding:.75rem 0 .9rem;border-bottom:1px solid var(--border);margin-bottom:0;line-height:1;}
 .hier-crumb{cursor:pointer;color:var(--crumb-muted);font-size:1rem;font-weight:400;padding:.18rem .1rem;border-radius:4px;transition:color .2s ease;text-decoration:none;}
 .hier-crumb:hover{color:var(--purple);}
 .hier-sep{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 12px;padding:0;color:var(--crumb-muted);opacity:.7;user-select:none;pointer-events:none;}
 .hier-current{font-size:1rem;color:#2D2D2D;font-weight:700;padding:.18rem .1rem;letter-spacing:.01em;}
+/* ── BREADCRUMB COLLAPSE ── */
+.crumb-items{display:flex;align-items:center;flex-wrap:wrap;gap:0;flex:1;overflow:hidden;max-height:3rem;opacity:1;transition:max-height .2s ease,opacity .15s ease;}
+.hier-breadcrumb.crumb-hidden .crumb-items{max-height:0;opacity:0;}
+.hier-breadcrumb.crumb-hidden{padding-top:.3rem;padding-bottom:.3rem;}
+.crumb-toggle-btn{margin-left:auto;flex-shrink:0;background:none;border:none;cursor:pointer;color:var(--crumb-muted);padding:.22rem .55rem;border-radius:5px;display:flex;align-items:center;transition:color .15s,background .15s;line-height:1;}
+.crumb-toggle-btn:hover{color:var(--purple);background:var(--lilac-light);}
+.crumb-chev{display:flex;align-items:center;transition:transform .2s;}
+.hier-breadcrumb.crumb-hidden .crumb-chev{transform:rotate(180deg);}
 
 /* ── SIDEBAR LEVEL CONTEXT ── */
 .sidebar-ctx-block{background:var(--purple);border-radius:var(--radius-sm);margin:.75rem .75rem .25rem;padding:.65rem .9rem;}
@@ -3057,6 +3065,21 @@ function toggleSidebarUnit(uid) {
   el.querySelector('.sidebar-unit-header').classList.toggle('active');
 }
 
+/* ── BREADCRUMB COLLAPSE ── */
+var _crumbCollapsed = (function(){try{return localStorage.getItem('crumb_col')==='1';}catch(e){return false;}})();
+var _CRUMB_TOGGLE_BTN = '<button class="crumb-toggle-btn" onclick="toggleCrumb()" title="Toggle breadcrumb"><span class="crumb-chev"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></span></button>';
+function _wrapCrumb(inner) {
+  var cls = (typeof _crumbCollapsed !== 'undefined' && _crumbCollapsed) ? ' crumb-hidden' : '';
+  return '<div class="hier-breadcrumb'+cls+'"><div class="crumb-items">'+inner+'</div>'+_CRUMB_TOGGLE_BTN+'</div>';
+}
+function toggleCrumb() {
+  _crumbCollapsed = !_crumbCollapsed;
+  try{localStorage.setItem('crumb_col', _crumbCollapsed?'1':'0');}catch(e){}
+  document.querySelectorAll('.hier-breadcrumb').forEach(function(el){
+    el.classList.toggle('crumb-hidden', _crumbCollapsed);
+  });
+}
+
 /* ── SIDEBAR COLLAPSE ── */
 var _sbCollapsed = (function(){ try{ return localStorage.getItem('sb_col')==='1'; }catch(e){ return false; } })();
 
@@ -3425,13 +3448,13 @@ function renderClassDetail(cn) {
   const prodMeta  = PRODUCTS_META.find(p => userProds.includes(p.id));
   const levelMeta = prodMeta ? LEVELS_META.find(l => l.product === prodMeta.id && l.active) : null;
 
-  const breadcrumbHTML = `<div class="hier-breadcrumb">
-    <span class="hier-crumb" onclick="showDashboard()">Home</span>
+  const breadcrumbHTML = _wrapCrumb(
+    `<span class="hier-crumb" onclick="showDashboard()">Home</span>
     ${prodMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${prodMeta.name}</span>` : ''}
     ${levelMeta ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="showDashboard()">${levelMeta.name} ${levelMeta.title}</span>` : ''}
     ${unitMeta  ? `<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="openUnit('${unitMeta.id}')">${unitMeta.icon} ${unitMeta.title}</span>` : ''}
-    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Class ${cn}</span>
-  </div>`;
+    <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-current">Class ${cn}</span>`
+  );
 
   document.getElementById('class-detail-content').innerHTML = `
     <div class="class-header">
@@ -4162,11 +4185,11 @@ function renderStudentCourses() {
   if (pids.length === 1) { studentOpenProduct(pids[0]); return; }
   currentStudentMode = 'courselist';
   saveNav();
-  var crumbBar = '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
+  var crumbBar = '<div class="su-crumb-bar">' + _wrapCrumb(
     '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
     '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
-    '<span class="hier-current">My Courses</span>' +
-    '</div></div>';
+    '<span class="hier-current">My Courses</span>'
+  ) + '</div>';
   var html = crumbBar + '<div class="s-detail-page">' +
     '<div class="su-page-header"><h1 class="su-page-title">My Courses</h1><p class="su-page-sub">Your enrolled programmes</p></div>';
   if (!pids.length) {
@@ -4204,11 +4227,11 @@ function renderStudentSchedule() {
   var nextMeta = nextCn ? CLASS_META[nextCn] : null;
   var nextUnit = nextCn ? UNITS_META.find(function(u){ return u.classes.indexOf(nextCn)>=0; }) : null;
   var html =
-    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar">' + _wrapCrumb(
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
-      '<span class="hier-current">Upcoming Classes</span>' +
-    '</div></div>' +
+      '<span class="hier-current">Upcoming Classes</span>'
+    ) + '</div>' +
     '<div class="s-detail-page">' +
     '<div class="su-page-header"><h1 class="su-page-title">Upcoming Classes</h1><p class="su-page-sub">What\'s next in your learning journey</p></div>';
   if (nextCn) {
@@ -4239,11 +4262,11 @@ function renderStudentNotices() {
   currentStudentMode = 'notices';
   saveNav();
   document.getElementById('student-view-content').innerHTML =
-    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar">' + _wrapCrumb(
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
-      '<span class="hier-current">Notice Board</span>' +
-    '</div></div>' +
+      '<span class="hier-current">Notice Board</span>'
+    ) + '</div>' +
     '<div class="s-detail-page">' +
     '<div class="su-page-header"><h1 class="su-page-title">Notice Board</h1><p class="su-page-sub">Announcements and updates from your teacher</p></div>' +
     '<div class="s-hub-notice-item" style="margin-bottom:.75rem;">' +
@@ -4303,11 +4326,11 @@ function renderStudentProgress() {
   }).join('');
 
   document.getElementById('student-view-content').innerHTML =
-    '<div class="su-crumb-bar"><div class="hier-breadcrumb">' +
+    '<div class="su-crumb-bar">' + _wrapCrumb(
       '<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>' +
       '<span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
-      '<span class="hier-current">My Progress</span>' +
-    '</div></div>' +
+      '<span class="hier-current">My Progress</span>'
+    ) + '</div>' +
     '<div class="s-detail-page">' +
     '<div class="su-page-header"><h1 class="su-page-title">My Progress</h1><p class="su-page-sub">Track your learning journey</p></div>' +
     '<div class="s-hub-stats-row" style="margin-bottom:1.5rem;">' +
@@ -4335,11 +4358,9 @@ function studentOpenProduct(pid) {
 function renderStudentLevels() {
   const p = currentStudentProduct;
   if (!p) { renderStudentProducts(); return; }
-  const crumb = `<div class="hier-breadcrumb">
-    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+  const crumb = _wrapCrumb(`<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-    <span class="hier-current">${p.name}</span>
-  </div>`;
+    <span class="hier-current">${p.name}</span>`);
   const allowedLevelIds = studentAllowedLevels(p.id);
   const levels = LEVELS_META.filter(function(l){ return l.product === p.id && l.active && allowedLevelIds.indexOf(l.id) >= 0; });
   let html = `<div class="su-crumb-bar">${crumb}</div>
@@ -4386,13 +4407,11 @@ function renderStudentUnits() {
   const pageSub   = firstName
     ? `Choose your next unit, ${firstName}`
     : 'Select a unit to continue your journey';
-  const crumb = `<div class="hier-breadcrumb">
-    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+  const crumb = _wrapCrumb(`<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     ${p ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    <span class="hier-current">Units</span>
-  </div>`;
+    <span class="hier-current">Units</span>`);
   let html = `<div class="su-crumb-bar">${crumb}</div>
     <div class="student-units">
       <div class="su-page-header">
@@ -4436,15 +4455,13 @@ function renderStudentClasses() {
   if (!u) return;
   const p  = currentStudentProduct;
   const lv = currentStudentLevel;
-  const crumb = `<div class="hier-breadcrumb">
-    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+  const crumb = _wrapCrumb(`<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     <span class="hier-crumb" onclick="renderStudentUnits()">Units</span>
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-    <span class="hier-current">${u.icon} ${u.title}</span>
-  </div>`;
+    <span class="hier-current">${u.icon} ${u.title}</span>`);
   const totalCls = u.classes.filter(classAllowedForStudent).length;
   let html = `<div class="su-crumb-bar">${crumb}</div>
     <div class="student-class-list">
@@ -4484,14 +4501,12 @@ function renderStudentClass() {
   const p    = currentStudentProduct;
   const lv   = currentStudentLevel;
 
-  const crumb = `<div class="hier-breadcrumb">
-    <span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
+  const crumb = _wrapCrumb(`<span class="hier-crumb" onclick="renderStudentProducts()">Home</span>
     <span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     ${p  ? `<span class="hier-crumb" onclick="renderStudentLevels()">${p.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     ${lv ? `<span class="hier-crumb" onclick="renderStudentLevels()">${lv.name}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
     ${u  ? `<span class="hier-crumb" onclick="renderStudentUnits()">Units</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><span class="hier-crumb" onclick="renderStudentClasses()">${u.icon} ${u.title}</span><span class="hier-sep"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>` : ''}
-    <span class="hier-current">Class ${cn}</span>
-  </div>`;
+    <span class="hier-current">Class ${cn}</span>`);
 
   const stages = ['vocab','listen','dialogue','grammar','exercises','pronunciation'];
   const stageLabels = {vocab:'📝\nVocab',listen:'🔊\nListen',dialogue:'💬\nDialogue',grammar:'📐\nGrammar',exercises:'✏️\nExercises',pronunciation:'🗣️\nPronunc.'};
