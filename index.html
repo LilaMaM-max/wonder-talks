@@ -29,6 +29,15 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;}
 
+/* ── GLOBAL SCROLLBAR ── */
+/* Firefox */
+*{scrollbar-width:thin;scrollbar-color:rgba(142,138,159,.38) transparent;}
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(142,138,159,.4);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(142,138,159,.72);transition:background .2s;}
+
 /* ── HEADER ── */
 .site-header{background:var(--purple);color:#fff;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;min-height:60px;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;gap:.25rem;}
 .site-header svg{filter:brightness(0) invert(1);}
